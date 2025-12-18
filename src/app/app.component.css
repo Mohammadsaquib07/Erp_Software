@@ -1,0 +1,8 @@
+nav a {
+  color: #333; /* or any color you want */
+  text-decoration: none; /* removes underline */
+  font-weight: 600; /* optional, makes text a bit bolder */
+  cursor: pointer;
+  padding: 4px 8px; /* optional spacing */
+}
+
