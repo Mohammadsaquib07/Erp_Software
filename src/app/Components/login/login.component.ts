@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { AuthService } from '../../Services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,7 @@ export class LoginComponent {
 
   loginForm:FormGroup;
   passwordPattern: string = '^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,}$'
-  constructor(private fb: FormBuilder) { 
+  constructor(private fb: FormBuilder,private authServiceObj:AuthService,private router:Router) { 
      this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
       password: ['', [Validators.required, Validators.minLength(6), Validators.pattern(this.passwordPattern)]]
@@ -24,20 +25,20 @@ export class LoginComponent {
     return this.loginForm.controls;
    }
 
-  //   onSubmit() {
-  //   if (this.loginForm.valid) {
-  //     this.authServiceObj.login(this.loginForm.value).subscribe({
-  //       next: data => {
-  //         alert('Login Successful');
-  //         this.router.navigate(['/dashboard'])
-  //       },
-  //       error: error => {
-  //         alert('Login Failed');
-  //       }
-  //     });
-  //   } else {
-  //     console.log('Form is invalid!');
-  //     this.loginForm.markAllAsTouched();
-  //   }
-  // }
+    onSubmit() {
+    if (this.loginForm.valid) {
+      this.authServiceObj.login(this.loginForm.value).subscribe({
+        next: data => {
+          alert('Login Successful');
+          this.router.navigate(['/dashboard'])
+        },
+        error: error => {
+          alert('Login Failed');
+        }
+      });
+    } else {
+      console.log('Form is invalid!');
+      this.loginForm.markAllAsTouched();
+    }
+  }
 }

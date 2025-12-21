@@ -3,11 +3,8 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-12 col-sm-10 col-md-6 col-lg-4">
-
         <div class="card login-card border-0 shadow-lg rounded-4">
           <div class="card-body p-4 p-md-5">
-
-            <!-- Brand -->
             <div class="text-center mb-4">
               <div class="brand-icon mb-2"></div>
               <h3 class="fw-bold mb-1">Secure Portal</h3>
@@ -15,10 +12,7 @@
                 Sign in to continue
               </p>
             </div>
-
             <form [formGroup]="loginForm">
-
-              <!-- Username -->
               <div class="mb-3">
                 <label class="form-label small fw-semibold text-muted">
                   Username
@@ -32,13 +26,10 @@
                     'is-invalid': f['username'].touched && f['username'].invalid
                   }"
                 />
-
                 <div class="invalid-feedback">
                   Username must be 3–20 characters
                 </div>
               </div>
-
-              <!-- Password -->
               <div class="mb-4">
                 <label class="form-label small fw-semibold text-muted">
                   Password
@@ -47,38 +38,31 @@
                   type="password"
                   formControlName="password"
                   class="form-control form-control-lg"
-                  placeholder="••••••••"
+                  placeholder="Enter your password"
                   [ngClass]="{
                     'is-invalid': f['password'].touched && f['password'].invalid
                   }"
                 />
-
                 <div class="invalid-feedback">
                   Password is invalid
                 </div>
               </div>
-
-              <!-- CTA -->
               <button
                 type="submit"
                 class="btn btn-primary btn-lg w-100 fw-semibold"
                 [disabled]="loginForm.invalid"
+                (click)="onSubmit()"
               >
                 Sign In
               </button>
-
             </form>
-
-            <!-- Footer -->
             <div class="text-center mt-4">
               <a href="#" class="small text-decoration-none text-muted">
                 Forgot your password?
               </a>
             </div>
-
           </div>
         </div>
-
       </div>
     </div>
   </div>

@@ -1,0 +1,248 @@
+<div class="sales-wrapper">
+  <div class="kpi-row">
+    <div class="kpi-card green">
+      <h4>Today’s Sales</h4>
+      <p class="value">₹12,450</p>
+    </div>
+    <div class="kpi-card blue">
+      <h4>Total Orders</h4>
+      <p class="value">58</p>
+    </div>
+    <div class="kpi-card orange">
+      <h4>Avg. Order Value</h4>
+      <p class="value">₹215</p>
+    </div>
+    <div class="kpi-card purple">
+      <h4>Top Product</h4>
+      <p class="value">Classic Watch</p>
+    </div>
+  </div>
+  <div class="orders-section">
+    <h3>Recent Orders</h3>
+    <table class="orders-table">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Items</th>
+          <th>Amount</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>#1001</td>
+          <td>Ravi Kumar</td>
+          <td>3</td>
+          <td>₹1,200</td>
+          <td><span class="status paid">Paid</span></td>
+        </tr>
+        <tr>
+          <td>#1002</td>
+          <td>Anita Shah</td>
+          <td>1</td>
+          <td>₹250</td>
+          <td><span class="status pending">Pending</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="actions">
+    <button class="btn primary" (click)="openInvoicePage()">+ New Invoice</button>
+    <button class="btn secondary">Print Report</button>
+    <button class="btn secondary" (click)="openManageProductPage()">Manage Products</button>
+  </div>
+  <div class="invoice-drawer" [class.open]="isInvoiceOpen">
+    <div class="drawer-header">
+      <h2 class="drawer-title">Create Invoice</h2>
+      <button class="close-btn" (click)="closeInvoice()">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+    <div class="drawer-body">
+      <form [formGroup]="form">
+        <div formGroupName="customer">
+          <div class="form-section">
+            <label>Customer Name</label>
+            <input type="text" formControlName="Name" placeholder="Enter customer name" />
+          </div>
+          <div class="form-section">
+            <label>Email</label>
+            <input type="email" formControlName="Email" placeholder="customer@email.com" />
+          </div>
+        </div>
+        <div formGroupName="invoice" class="form-section">
+          <label>Notes</label>
+          <input type="text" formControlName="notes" placeholder="Notes" />
+        </div>
+        <div formGroupName="invoice" class="form-section">
+          <label>Items</label>
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Total</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody formArrayName="items">
+              <tr *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+                <td><input type="text" formControlName="ProductName" placeholder="Item name"></td>
+                <td><input type="number" formControlName="Quantity" min="1"></td>
+                <td><input type="number" formControlName="Price" min="0"></td>
+                <td>₹{{ getTotal(item) }}</td>
+                <td>
+                  <button style="border:none !important" type="button" (click)="removeItem(i)">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button type="button" class="add-item-btn" (click)="addItem()">
+            <i class="pi pi-plus-circle"></i> Add Item
+          </button>
+        </div>
+        <div class="summary">
+          <div class="row">
+            <span>Subtotal</span>
+            <span>₹{{ subtotal | number:'1.2-2' }}</span>
+          </div>
+          <div class="row">
+            <span>Tax (18%)</span>
+            <span>₹{{ tax | number:'1.2-2' }}</span>
+          </div>
+          <div class="row total">
+            <span>Total</span>
+            <span>₹{{ total | number:'1.2-2' }}</span>
+          </div>
+        </div>
+        <button class="btn primary full-width" type="button" (click)="saveInvoice()">Save</button>
+      </form>
+    </div>
+  </div>
+<div class="invoice-drawer" [class.open]="isManageProductOpen">
+  <div class="drawer-header px-3">
+    <h2 class="drawer-title">Manage Products</h2>
+    <button class="close-btn" (click)="closeManageProductPage()">
+      <i class="pi pi-times"></i>
+    </button>
+  </div>
+  <div class="drawer-body px-3">
+    <!-- FORM -->
+    <div class="py-3 border-bottom" [formGroup]="createItemForm">
+      <div class="row align-items-center mb-3">
+        <div class="col-5">
+          Product Name
+        </div>
+        <div class="col-7">
+          <!-- <input type="text" class="form-control"> -->
+           <input type="text" class="form-control" formControlName="Name" placeholder="Enter Product Name"
+              [ngClass]="{'is-invalid': Add['Name'].touched && Add['Name'].invalid,'is-valid':Add['Name'].touched && Add['Name'].valid}" />
+        </div>
+      </div>
+
+      <div class="row align-items-center mb-3">
+        <div class="col-5">
+          Price
+        </div>
+        <div class="col-7">
+          <input type="number" class="form-control" formControlName="Price" placeholder="0.00"
+              [ngClass]="{'is-invalid': Add['Price'].touched && Add['Price'].invalid,'is-valid':Add['Price'].touched && Add['Price'].valid}" />
+        </div>
+      </div>
+
+      <div class="row align-items-center mb-3">
+        <div class="col-5">
+          Stock
+        </div>
+        <div class="col-7">
+           <input type="number" class="form-control" formControlName="Stock" placeholder="0.00"
+              [ngClass]="{'is-invalid': Add['Stock'].touched && Add['Stock'].invalid,'is-valid':Add['Stock'].touched && Add['Stock'].valid}" />
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end mt-4">
+        <button class="btn btn-outline-success" [disabled]="createItemForm.invalid" (click)="addProduct()">Add</button>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="d-none d-md-block mt-4">
+      <table class="table table-bordered align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of productList">
+            <td>{{ product.name }}</td>
+            <td>₹{{ product.price }}</td>
+            <td>{{ product.stock }}</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-outline-secondary me-2"
+                      (click)="openEditModal(product)">
+                <i class="pi pi-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger"
+                      (click)="deleteProduct(product.id)">
+                <i class="pi pi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+<div class="custom-modal-backdrop" *ngIf="showModal" (click)="closeModal()">
+</div>
+<div class="custom-backdrop-edit" *ngIf="showEditModal" (click)="closeEditModal()"></div>
+<div class="custom-modal-wrapper-edit" *ngIf="showEditModal">
+  <div class="custom-modal-edit card shadow-lg edit-product-modal">
+    <!-- HEADER -->
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0 fw-semibold">Edit Product</h5>
+      <button class="btn btn-sm btn-light" (click)="closeEditModal()">✕</button>
+    </div>
+    <!-- BODY -->
+    <form [formGroup]="editForm">
+      <div class="card-body">
+        <div class="row g-3">
+          <!-- Product Name -->
+          <div class="col-12">
+            <label class="form-label">Product Name</label>
+            <input type="text" class="form-control" formControlName="Name" placeholder="Enter Product Name"
+              [ngClass]="{'is-invalid': f['Name'].touched && f['tName'].invalid,'is-valid':f['Name'].touched && f['tName'].valid}" />
+          </div>
+
+          <!-- Price -->
+          <div class="col-md-6">
+            <label class="form-label">Price (₹)</label>
+            <input type="number" class="form-control" formControlName="Price" placeholder="0.00"
+              [ngClass]="{'is-invalid': f['Price'].touched && f['Price'].invalid,'is-valid':f['Price'].touched && f['Price'].valid}" />
+
+          </div>
+
+          <!-- Stock -->
+          <div class="col-md-6">
+            <label class="form-label">Stock</label>
+            <input type="number" class="form-control" formControlName="Stock" placeholder="0"
+              [ngClass]="{'is-invalid': f['Stock'].touched && f['Stock'].invalid,'is-valid':f['Stock'].touched && f['Stock'].valid}" />
+          </div>
+        </div>
+      </div>
+    </form>
+    <div class="card-footer bg-white d-flex justify-content-end gap-2">
+      <button class="btn btn-outline-secondary" (click)="closeEditModal()">Cancel</button>
+      <button class="btn btn-primary" [disabled]="editForm.invalid" (click)="updateRecord()">Save Changes</button>
+    </div>
+  </div>
+</div>

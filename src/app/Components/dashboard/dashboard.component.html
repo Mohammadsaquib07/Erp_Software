@@ -1,0 +1,31 @@
+<div class="dashboard-wrapper">
+  <aside class="sidebar" [class.collapsed]="isCollapsed">
+    <div class="sidebar-header">
+      <h2>ERP</h2>
+      <button class="toggle-btn" (click)="toggleSidebar()">
+        <i class="pi" [ngClass]="isCollapsed ? 'pi-angle-right' : 'pi-angle-left'"></i>
+      </button>
+    </div>
+    <ul class="nav-links">
+      <li *ngFor="let item of menuItems" (click)="openPage(item.label)" [class.active]="activePage === item.label">
+        <i [class]="item.icon">
+        </i>
+        <span *ngIf="!isCollapsed">{{ item.label }}</span>
+      </li>
+    </ul>
+  </aside>
+  <main class="main-content">
+    <header class="topbar">
+      <h1>Dashboard</h1>
+      <div class="user-info">
+        <span>Hey Mohammad</span>
+        <i class="pi pi-user" style="cursor: pointer;" (click)="logOut()"></i>
+      </div>
+    </header>
+    <div class="rightPanel">
+      <span style="display: flex; width: 100% !important; flex-wrap: wrap; flex-direction: column;">
+        <app-product-component *ngIf="activePage === 'Sales'"></app-product-component>
+      </span>
+    </div>
+  </main>
+</div>
