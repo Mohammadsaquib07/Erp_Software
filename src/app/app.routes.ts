@@ -8,6 +8,7 @@ export const routes: Routes = [
         pathMatch: 'full',
         redirectTo: 'login'
     },
+
     {
         canActivate:[notAuthGuard],
         path: '',
