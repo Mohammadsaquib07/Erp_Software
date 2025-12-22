@@ -5,13 +5,14 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app/app.routes';
  import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { tokenInterceptor } from './app/Interceptors/token.interceptor';
+import { loadingInterceptor } from './app/Interceptors/loading.interceptor';
 
 bootstrapApplication(AppComponent, {
   providers: [
     provideAnimations(),
     provideRouter(routes),
     provideHttpClient(
-      withInterceptors([tokenInterceptor]) // Register it here
+      withInterceptors([tokenInterceptor,loadingInterceptor]) // Register it here
     )
   ]
 });

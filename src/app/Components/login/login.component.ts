@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../Services/auth.service';
+import { SpinnerComponent } from '../spinner/spinner.component';
+import { LoadingServiceService } from '../../Services/loading-service.service';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +16,7 @@ import { AuthService } from '../../Services/auth.service';
 export class LoginComponent {
 
   loginForm:FormGroup;
+  private loading = inject(LoadingServiceService)
   passwordPattern: string = '^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,}$'
   constructor(private fb: FormBuilder,private authServiceObj:AuthService,private router:Router) { 
      this.loginForm = this.fb.group({
@@ -27,9 +30,9 @@ export class LoginComponent {
 
     onSubmit() {
     if (this.loginForm.valid) {
+      this.loading.show()
       this.authServiceObj.login(this.loginForm.value).subscribe({
         next: data => {
-          alert('Login Successful');
           this.router.navigate(['/dashboard'])
         },
         error: error => {
