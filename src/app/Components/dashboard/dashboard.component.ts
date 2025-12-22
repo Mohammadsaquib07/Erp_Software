@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ProductComponent } from '../product-component/product-component';
+import { AuthService } from '../../Services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,6 +11,7 @@ import { ProductComponent } from '../product-component/product-component';
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
+  constructor(private authService:AuthService){}
   menuItems = [
     { label: 'Home', icon: 'pi pi-home' },
     { label: 'Sales', icon: 'pi pi-shopping-cart' },
@@ -28,6 +30,6 @@ export class DashboardComponent {
     this.activePage = page;
   }
   logOut(){
-    alert('called')
+  this.authService.logOut();
   }
 }

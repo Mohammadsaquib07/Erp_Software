@@ -1,0 +1,455 @@
+.sales-wrapper {
+  /* fill the available space but avoid forcing horizontal scroll */
+  padding: 20px;
+  background: #f7f9fc;
+  box-sizing: border-box;
+  /* NEW: prevent accidental horizontal scroll */
+  overflow-x: hidden;
+}
+
+/* KPI Cards */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.kpi-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease;
+  box-sizing: border-box; /* NEW */
+}
+
+  .kpi-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .kpi-card h4 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .kpi-card .value {
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .kpi-card.green {
+    border-left: 6px solid #2ecc71;
+  }
+
+  .kpi-card.blue {
+    border-left: 6px solid #3498db;
+  }
+
+  .kpi-card.orange {
+    border-left: 6px solid #e67e22;
+  }
+
+  .kpi-card.purple {
+    border-left: 6px solid #9b59b6;
+  }
+
+/* Orders Section */
+.orders-section h3 {
+  margin-bottom: 15px;
+}
+
+/* wrap table in a scrollable container */
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  /* NEW: let long content scroll horizontally inside table only */
+  display: block;
+  overflow-x: auto;
+}
+
+  .orders-table thead,
+  .orders-table tbody {
+    display: table;
+    width: 100%;
+    table-layout: fixed; /* keeps columns aligned */
+  }
+
+  .orders-table th,
+  .orders-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    white-space: nowrap; /* prevents text from wrapping and breaking layout */
+  }
+
+  .orders-table thead {
+    background: #f1f3f5;
+    font-weight: 600;
+  }
+
+.status {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+  .status.paid {
+    background: #d4edda;
+    color: #155724;
+  }
+
+  .status.pending {
+    background: #fff3cd;
+    color: #856404;
+  }
+
+/* Quick Actions */
+.actions {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap; /* NEW: wrap buttons on small screens */
+  gap: 15px;
+}
+
+.btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+  .btn.primary {
+    background: #3498db;
+    color: #fff;
+  }
+
+  .btn.secondary {
+    background: #ecf0f1;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+  }
+
+.bi-x-lg {
+  background: none;
+  color: #d31515;
+  cursor: pointer;
+  display: flex;
+  border: 2px solid #fe0c0c;
+  border-radius: 7px;
+  font-size: 19px;
+}
+
+/* Drawer Base */
+.invoice-drawer {
+  position: fixed;
+  top: 0;
+  right: -495px;
+  width: 495px;
+  height: 100%;
+  background: #fff;
+  box-shadow: -6px 0 25px rgba(0,0,0,0.15);
+  transition: right 0.35s ease;
+  display: flex;
+  flex-direction: column;
+  z-index: 1050;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  overflow-y: auto;
+}
+
+  .invoice-drawer.open {
+    right: 0;
+  }
+
+/* Header */
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #eee;
+  background: #f8f9fb;
+}
+
+.drawer-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: #7f8c8d;
+  cursor: pointer;
+}
+
+/* Body & Form */
+.drawer-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-section label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #34495e;
+}
+
+.form-section input,
+.form-section textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #dfe6e9;
+  border-radius: 8px;
+  outline: none;
+  transition: border 0.2s;
+  font-size: 14px;
+}
+
+  .form-section input:focus,
+  .form-section textarea:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52,152,219,0.2);
+  }
+
+/* Items Table */
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fafafa;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+  .items-table th,
+  .items-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+  }
+
+.add-item-btn {
+  margin-top: 10px;
+  background: none;
+  border: none;
+  color: #3498db;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Summary */
+.summary {
+  background: #f7f9fc;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 10px;
+}
+
+  .summary .row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 15px;
+  }
+
+  .summary .total {
+    font-weight: 700;
+    font-size: 17px;
+    color: #2c3e50;
+  }
+
+/* Buttons */
+.btn.primary.full-width {
+  width: 100%;
+  padding: 12px;
+  background: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+  .btn.primary.full-width:hover {
+    background: #2980b9;
+  }
+
+
+::-webkit-scrollbar {
+  width: 6px; 
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #3498db; 
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #5cace1;
+  border-radius: 10px;
+  border: 2px solid #5cace1; 
+}
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(52,152,219,0.2);
+  }
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse; /* table ke cells ke beech double border na ho */
+}
+
+  .items-table th,
+  .items-table td {
+    padding: 8px 12px;
+    text-align: left;
+  }
+
+  .items-table th {
+    border-bottom: 2px solid #ddd; /* th ke niche thoda strong separation */
+  }
+
+  .items-table td {
+    border-bottom: 1px solid #f0f0f0; /* light separation between rows */
+  }
+
+  /* Optional: hover effect for better look */
+  .items-table tbody tr:hover {
+    background-color: #f9f9f9;
+  }
+
+/* Button style clean */
+.add-item-btn {
+  margin-top: 8px;
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+}
+
+
+/* Backdrop */
+.custom-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(2px);
+  z-index: 1050;
+}
+
+/* Center modal container */
+.custom-modal-container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1060;
+  padding: 1rem; /* for mobile spacing */
+}
+
+/* Modal Box */
+.custom-modal {
+  background: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 1200px;
+  padding: 1.5rem;
+  animation: modalFade .2s ease-out;
+  height: 100% !important;
+}
+
+/* Animation */
+@keyframes modalFade {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsive tweaks */
+@media (max-width: 576px) {
+  .custom-modal {
+    padding: 1rem;
+    max-width: 95%;
+  }
+}
+
+
+
+
+
+/* --------edit modal start------ */
+/* Backdrop */
+.custom-backdrop-edit {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1050;
+}
+
+/* Centering wrapper */
+.custom-modal-wrapper-edit {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  z-index: 1060;
+}
+
+/* Modal */
+.custom-modal-edit {
+  width: 100%;
+  max-width: 520px;
+  border-radius: 12px;
+  animation: fadeScale 0.2s ease;
+}
+
+/* Mobile full screen */
+@media (max-width: 576px) {
+  .edit-product-modal-edit {
+    max-width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+}
+
+/* Animation */
+@keyframes fadeScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ----edit modal end---- */

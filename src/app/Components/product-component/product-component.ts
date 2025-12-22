@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { InputTextModule } from 'primeng/inputtext';
-
 import {
   AbstractControl,
   FormArray,
@@ -90,6 +89,7 @@ export class ProductComponent implements OnInit {
     });
   }
   loadItem() {
+    debugger
     this.itemservice.getAllItems().subscribe({
       next: (res) => {
         this.productList = res;
@@ -209,7 +209,6 @@ export class ProductComponent implements OnInit {
   saveInvoice() {
     const customerGroup = this.form.get('customer') as FormGroup;
     const invoiceGroup = this.form.get('invoice') as FormGroup;
-
     const payload: FullInvoiceRequest = {
       isNewCustomer: this.form.value.isNewCustomer,
       customer: {
@@ -230,24 +229,5 @@ export class ProductComponent implements OnInit {
         }))
       }
     };
-
-    //this.createInvoiceObj.CreateInvoice(payload).subscribe({
-    //  next: (res) => {
-    //    console.log('Invoice created successfully:', res);
-    //    alert('Invoice saved!');
-    //    // reset form but keep one empty item row
-    //    this.form.reset({
-    //      isNewCustomer: true,
-    //      customer: { Name: '', Email: '', Phone: '', BillingAddress: '' },
-    //      invoice: { notes: '', createdBy: 'Admin', items: [] }
-    //    });
-    //    this.items.clear();
-    //    this.addItem();
-    //  },
-    //  error: (err) => {
-    //    console.error('Error creating invoice:', err);
-    //    alert('Error saving invoice');
-    //  }
-    //});
   }
 }
