@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ProductComponent } from '../product-component/product-component';
 import { AuthService } from '../../Services/auth.service';
 import { SpinnerComponent } from '../spinner/spinner.component';
+import { LoadingServiceService } from '../../Services/loading-service.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,6 +14,7 @@ import { SpinnerComponent } from '../spinner/spinner.component';
 })
 export class DashboardComponent {
   constructor(private authService:AuthService){}
+  loading = inject(LoadingServiceService)
   menuItems = [
     { label: 'Home', icon: 'pi pi-home' },
     { label: 'Sales', icon: 'pi pi-shopping-cart' },
@@ -31,6 +33,7 @@ export class DashboardComponent {
     this.activePage = page;
   }
   logOut(){
+  this.loading.show()
   this.authService.logOut();
   }
 }

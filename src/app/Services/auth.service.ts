@@ -32,7 +32,6 @@ private loading = inject(LoadingServiceService)
   localStorage.setItem(this.JWT_TOKEN, token);
 }
   logOut() {
-    this.loading.show()
     localStorage.removeItem(this.JWT_TOKEN);
     this.isAuthenticatedSubject.next(false);
     this.router.navigate(['']);

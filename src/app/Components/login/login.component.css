@@ -1,20 +1,94 @@
+/* Page */
 .login-wrapper {
-  background: radial-gradient(circle at top, #eef2ff, #f8f9fa);
+  background-color: #e9eef5; /* soft blue-gray */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
 }
 
+/* Card */
 .login-card {
-  backdrop-filter: blur(10px);
-  background-color: rgba(255, 255, 255, 0.95);
+  background: #f9fafb;
+  border-radius: 10px;
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
 }
 
-.brand-icon {
-  font-size: 2rem;
+/* Header */
+.login-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  letter-spacing: 0.02em;
 }
 
+.login-card p {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Labels */
+.form-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+}
+
+/* Inputs */
 .form-control {
-  border-radius: 0.75rem;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #cbd5e1;
+  border-radius: 0;
+  padding: 8px 4px;
+  font-size: 14px;
+  color: #111827;
 }
 
+.form-control::placeholder {
+  color: #9ca3af;
+}
+
+.form-control:focus {
+  outline: none;
+  box-shadow: none;
+  border-bottom-color: #2563eb;
+}
+
+/* Validation */
+.form-control.is-invalid {
+  border-bottom-color: #dc2626;
+}
+
+/* Button */
 .btn-primary {
-  border-radius: 0.75rem;
+  background: transparent;
+  border: 1px solid #2563eb;
+  color: #2563eb;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+/* Disabled */
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Footer link */
+.login-card a {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.login-card a:hover {
+  color: #2563eb;
 }

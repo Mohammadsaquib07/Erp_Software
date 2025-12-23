@@ -4,21 +4,21 @@ import { Injectable, signal } from '@angular/core';
   providedIn: 'root'
 })
 export class LoadingServiceService {
-
-  private activeRequests: number = 0;
-  isLoading = signal(false);
+  private activeRequest:number = 0
+  isLoading = signal(false)
 
   show(){
-    if(this.activeRequests === 0){
-      this.isLoading.set(true);
-      this.activeRequests++;
+    if(this.activeRequest === 0){
+      this.isLoading.set(true)
+      this.activeRequest ++
     }
   }
+
   hide(){
-    this.activeRequests--;
-    if(this.activeRequests <= 0){
-      this.isLoading.set(false);
-      this.activeRequests = 0;
+    this.activeRequest--
+    if(this.activeRequest<=0){
+      this.isLoading.set(false)
+      this.activeRequest = 0
     }
   }
   constructor() { }
