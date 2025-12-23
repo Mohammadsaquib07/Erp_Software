@@ -19,8 +19,18 @@
       <h1>Dashboard</h1>
       <div class="user-info">
         <span>Hey Mohammad</span>
-        <i class="pi pi-user" style="cursor: pointer;" (click)="logOut()"></i>
+        <i class="pi pi-user" style="cursor: pointer;" (click)="togglePopup()"></i>
       </div>
+      <div *ngIf="showConfirmation" class="logout-wrapper">
+        <div class="logout-confirm">
+    <p>Log out from this session?</p>
+    <div class="logout-actions">
+      <button class="btn-no" (click)="hideConfirmation()">Cancel</button>
+      <button class="btn-yes" (click)="logOut()">Log out</button>
+    </div>
+       </div>
+       </div>
+
     </header>
     <div class="rightPanel">
       <span style="display: flex; width: 100% !important; flex-wrap: wrap; flex-direction: column;">

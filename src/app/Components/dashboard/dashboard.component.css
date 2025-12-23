@@ -98,6 +98,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   margin-bottom: 2rem;
   box-sizing: border-box;
+  position: relative;
   /* ensures padding doesn't overflow */
 }
 
@@ -196,4 +197,103 @@
 .card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Wrapper */
+.logout-wrapper {
+  position: absolute;
+    top: 35px;
+    right: 11px;
+    display: inline-block;
+}
+.logout-btn {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+}
+
+/* Tooltip box */
+.logout-confirm {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 220px;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e5e7eb;
+  z-index: 1000;
+}
+
+/* Arrow */
+.logout-confirm::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: 12px;
+  width: 10px;
+  height: 10px;
+  background: #ffffff;
+  border-left: 1px solid #e5e7eb;
+  border-top: 1px solid #e5e7eb;
+  transform: rotate(45deg);
+}
+
+/* Text */
+.logout-confirm p {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: #374151;
+}
+
+/* Actions */
+.logout-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Buttons */
+.btn-no,
+.btn-yes {
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Cancel */
+.btn-no {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.btn-no:hover {
+  background: #f3f4f6;
+}
+
+/* Confirm */
+.btn-yes {
+  background: #dc2626;
+  border: none;
+  color: #ffffff;
+}
+
+.btn-yes:hover {
+  background: #b91c1c;
+}
+
+/* Mobile safety */
+@media (max-width: 480px) {
+  .logout-confirm {
+    right: auto;
+    left: 0;
+  }
 }

@@ -13,8 +13,13 @@ import { LoadingServiceService } from '../../Services/loading-service.service';
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
+
   constructor(private authService:AuthService){}
   loading = inject(LoadingServiceService)
+  showConfirmation:boolean = false
+  isCollapsed: boolean = false;
+  activePage: string = 'home';
+
   menuItems = [
     { label: 'Home', icon: 'pi pi-home' },
     { label: 'Sales', icon: 'pi pi-shopping-cart' },
@@ -24,16 +29,24 @@ export class DashboardComponent {
     { label: 'Reports', icon: 'pi pi-chart-line' },
     { label: 'Settings', icon: 'pi pi-cog' }
   ];
-  isCollapsed: boolean = false;
-  activePage: string = 'home';
+
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
   }
   openPage(page: string) {
     this.activePage = page;
   }
+  togglePopup(){
+    this.showConfirmation =!this.showConfirmation
+  }
   logOut(){
   this.loading.show()
   this.authService.logOut();
+  setTimeout(() => {
+    this.loading.hide()
+  }, 2000);
+  }
+  hideConfirmation(){
+    this.showConfirmation= false
   }
 }
