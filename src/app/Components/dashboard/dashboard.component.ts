@@ -46,6 +46,7 @@ export class DashboardComponent {
     this.loading.hide()
   }, 2000);
   }
+  
   hideConfirmation(){
     this.showConfirmation= false
   }
