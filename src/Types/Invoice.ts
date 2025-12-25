@@ -11,6 +11,14 @@ export interface Invoice {
   createdBy?: string;
   items: InvoiceItem[];
 }
+export interface InvoiceProduct {
+  productId: number ;
+  productName: string;
+  price: number;
+  qty: number;
+  availableStock: number;
+  total: number;
+}
 export interface FullInvoiceRequest {
   isNewCustomer: boolean;
   customer?: CustomerDto; 

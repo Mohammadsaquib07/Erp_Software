@@ -11,7 +11,7 @@ import {
 } from '@angular/forms';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { ItemService, Product } from '../../Services/item.service';
-import { FullInvoiceRequest } from '../../../Types/Invoice';
+import { FullInvoiceRequest, InvoiceItem, InvoiceProduct, } from '../../../Types/Invoice';
 
 @Component({
   selector: 'app-product-component',
@@ -24,12 +24,15 @@ export class ProductComponent implements OnInit {
   form: FormGroup;
   isInvoiceOpen = false;
   showModal = false;
-  productList: any[] = [];
+  productList: any[] = []
+  getList: InvoiceProduct[] = []
+  tempList: any
   showEditModal = false;
   isManageProductOpen = false;
   selectedProduct: any = null;
   editForm!: FormGroup;
   createItemForm!: FormGroup;
+  invoiceItems: InvoiceProduct[] = []
 
   openEditModal(product: any) {
     this.showEditModal = true;
@@ -89,7 +92,6 @@ export class ProductComponent implements OnInit {
     });
   }
   loadItem() {
-    debugger
     this.itemservice.getAllItems().subscribe({
       next: (res) => {
         this.productList = res;
@@ -138,6 +140,7 @@ export class ProductComponent implements OnInit {
       this.createItemForm.markAllAsTouched();
       return;
     }
+
     const payload: Product = {
       name: this.Add['Name'].value.trim(),
       price: this.Add['Price'].value,
@@ -146,7 +149,8 @@ export class ProductComponent implements OnInit {
 
     this.itemservice.addItem(payload).subscribe({
       next: (createdProduct) => {
-        this.productList.unshift(createdProduct);
+        this.productList.push(createdProduct);
+        console.log("this is the end", this.productList)
         this.createItemForm.reset();
         this.closeModal();
         alert('Product Added Successfully');
@@ -156,8 +160,8 @@ export class ProductComponent implements OnInit {
         alert('Error adding product');
       }
     });
-  };
 
+  };
   get Add() {
     return this.createItemForm.controls;
   }
@@ -230,4 +234,11 @@ export class ProductComponent implements OnInit {
       }
     };
   }
+
+  isProductAlreadySelected(productId: number, rowIndex: number): boolean {
+    return this.invoiceItems.some(
+      (item, i) => item.productId === productId && i !== rowIndex
+    );
+  }
+
 }
