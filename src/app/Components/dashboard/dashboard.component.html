@@ -20,29 +20,13 @@
   <main class="main-content">
     <header class="topbar">
       <h1>Dashboard</h1>
-      <div class="user-info">
+      <div class="user-info dropdown">
         <span>Hey Mohammad</span>
-        <i class="pi pi-user" style="cursor: pointer;" (click)="togglePopup()"></i>
+        <i class="pi pi-user" style="cursor: pointer;" data-bs-toggle="dropdown"></i>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" (click)="logOut()">Logout</a></li>
+        </ul>
       </div>
-      <!-- Bootstrap Modal for Logout -->
-      <div class="modal fade" [ngClass]="{'show': showConfirmation, 'd-block': showConfirmation}" tabindex="-1" [attr.aria-hidden]="!showConfirmation">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Confirm Logout</h5>
-              <button type="button" class="btn-close" (click)="hideConfirmation()"></button>
-            </div>
-            <div class="modal-body">
-              Log out from this session?
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" (click)="hideConfirmation()">Cancel</button>
-              <button type="button" class="btn btn-primary" (click)="logOut()">Log out</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-backdrop fade show" *ngIf="showConfirmation"></div>
 
     </header>
     <div class="rightPanel">

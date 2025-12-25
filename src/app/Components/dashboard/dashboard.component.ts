@@ -16,7 +16,6 @@ export class DashboardComponent implements AfterViewInit {
 
   constructor(private authService:AuthService){}
   loading = inject(LoadingServiceService)
-  showConfirmation:boolean = false
   isCollapsed: boolean = false;
   activePage: string = 'home';
 
@@ -64,18 +63,12 @@ export class DashboardComponent implements AfterViewInit {
   openPage(page: string) {
     this.activePage = page;
   }
-  togglePopup(){
-    this.showConfirmation =!this.showConfirmation
-  }
-  logOut(){
-  this.loading.show()
-  this.authService.logOut();
-  setTimeout(() => {
-    this.loading.hide()
-  }, 2000);
-  }
 
-  hideConfirmation(){
-    this.showConfirmation= false
+  logOut() {
+    this.loading.show();
+    this.authService.logOut();
+    setTimeout(() => {
+      this.loading.hide();
+    }, 2000);
   }
 }
