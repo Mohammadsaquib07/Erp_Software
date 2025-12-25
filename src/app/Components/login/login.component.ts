@@ -18,6 +18,9 @@ export class LoginComponent {
   loginForm:FormGroup;
   private loading = inject(LoadingServiceService)
   passwordPattern: string = '^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,}$'
+  showPassword: boolean = false;
+  errorMessage: string = '';
+
   constructor(private fb: FormBuilder,private authServiceObj:AuthService,private router:Router) { 
      this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
@@ -28,6 +31,10 @@ export class LoginComponent {
     return this.loginForm.controls;
    }
 
+   togglePasswordVisibility() {
+     this.showPassword = !this.showPassword;
+   }
+
     onSubmit() {
     if (this.loginForm.valid) {
       this.loading.show()
@@ -36,7 +43,8 @@ export class LoginComponent {
           this.router.navigate(['/dashboard'])
         },
         error: error => {
-          alert('Login Failed');
+          this.errorMessage = 'Login Failed: Invalid credentials';
+          this.loading.hide();
         }
       });
     } else {

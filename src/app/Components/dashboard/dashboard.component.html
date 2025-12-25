@@ -1,13 +1,16 @@
 <div class="dashboard-wrapper">
   <aside class="sidebar" [class.collapsed]="isCollapsed">
     <div class="sidebar-header">
-      <h2>ERP</h2>
+      <h2 *ngIf="!isCollapsed">ERP</h2>
       <button class="toggle-btn" (click)="toggleSidebar()">
         <i class="pi" [ngClass]="isCollapsed ? 'pi-angle-right' : 'pi-angle-left'"></i>
       </button>
     </div>
     <ul class="nav-links">
-      <li *ngFor="let item of menuItems" (click)="openPage(item.label)" [class.active]="activePage === item.label">
+      <li *ngFor="let item of menuItems" (click)="openPage(item.label)" [class.active]="activePage === item.label"
+          [attr.data-bs-toggle]="isCollapsed ? 'tooltip' : null"
+          [attr.data-bs-placement]="'right'"
+          [attr.title]="isCollapsed ? item.label : null">
         <i [class]="item.icon">
         </i>
         <span *ngIf="!isCollapsed">{{ item.label }}</span>
@@ -21,19 +24,33 @@
         <span>Hey Mohammad</span>
         <i class="pi pi-user" style="cursor: pointer;" (click)="togglePopup()"></i>
       </div>
-      <div *ngIf="showConfirmation" class="logout-wrapper">
-        <div class="logout-confirm">
-    <p>Log out from this session?</p>
-    <div class="logout-actions">
-      <button class="btn-no" (click)="hideConfirmation()">Cancel</button>
-      <button class="btn-yes" (click)="logOut()">Log out</button>
-    </div>
-       </div>
-       </div>
+      <!-- Bootstrap Modal for Logout -->
+      <div class="modal fade" [ngClass]="{'show': showConfirmation, 'd-block': showConfirmation}" tabindex="-1" [attr.aria-hidden]="!showConfirmation">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Confirm Logout</h5>
+              <button type="button" class="btn-close" (click)="hideConfirmation()"></button>
+            </div>
+            <div class="modal-body">
+              Log out from this session?
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="hideConfirmation()">Cancel</button>
+              <button type="button" class="btn btn-primary" (click)="logOut()">Log out</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-backdrop fade show" *ngIf="showConfirmation"></div>
 
     </header>
     <div class="rightPanel">
       <span style="display: flex; width: 100% !important; flex-wrap: wrap; flex-direction: column;">
+        <div *ngIf="activePage === 'Home'" class="welcome-message">
+          <h2>Welcome to ERP Dashboard</h2>
+          <p>Select a module from the sidebar to get started.</p>
+        </div>
         <app-product-component *ngIf="activePage === 'Sales'"></app-product-component>
       </span>
     </div>

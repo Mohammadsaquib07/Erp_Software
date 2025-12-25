@@ -1,94 +1,164 @@
 /* Page */
 .login-wrapper {
-  background-color: #e9eef5; /* soft blue-gray */
-  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+  background: linear-gradient(135deg, #e0f2fe 0%, #f3e8ff 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+  opacity: 0.1;
+  z-index: 0;
 }
 
 /* Card */
 .login-card {
-  background: #f9fafb;
-  border-radius: 10px;
-  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: slideUp 0.6s ease-out;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Header */
 .login-card h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #111827;
-  letter-spacing: 0.02em;
+  font-size: 24px;
+  font-weight: 700;
+  color: #2d3748;
+  letter-spacing: -0.025em;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .login-card p {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 14px;
+  color: #718096;
 }
 
 /* Labels */
 .form-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #6b7280;
+  letter-spacing: 0.05em;
+  color: #4a5568;
+  margin-bottom: 8px;
 }
 
 /* Inputs */
+.input-group-text {
+  border: none;
+  background: transparent;
+  padding-left: 0;
+}
+
 .form-control {
   background: transparent;
   border: none;
-  border-bottom: 1px solid #cbd5e1;
+  border-bottom: 2px solid #e2e8f0;
   border-radius: 0;
-  padding: 8px 4px;
-  font-size: 14px;
-  color: #111827;
+  padding: 12px 4px;
+  font-size: 16px;
+  color: #2d3748;
+  transition: all 0.3s ease;
 }
 
 .form-control::placeholder {
-  color: #9ca3af;
+  color: #a0aec0;
 }
 
 .form-control:focus {
   outline: none;
   box-shadow: none;
-  border-bottom-color: #2563eb;
+  border-bottom-color: #667eea;
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.form-control:focus + .input-group-text i {
+  color: #667eea;
 }
 
 /* Validation */
 .form-control.is-invalid {
-  border-bottom-color: #dc2626;
+  border-bottom-color: #e53e3e;
+}
+
+.form-control.is-valid {
+  border-bottom-color: #38a169;
+}
+
+.invalid-feedback {
+  font-size: 12px;
+  color: #e53e3e;
+  margin-top: 4px;
+}
+
+.form-check-input:checked {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+
+.form-check-label {
+  cursor: pointer;
 }
 
 /* Button */
 .btn-primary {
-  background: transparent;
-  border: 1px solid #2563eb;
-  color: #2563eb;
-  border-radius: 6px;
-  font-size: 14px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: #ffffff;
+  border-radius: 50px;
+  font-size: 16px;
   font-weight: 600;
-  padding: 10px;
-  transition: all 0.2s ease;
+  padding: 14px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 .btn-primary:hover {
-  background: #2563eb;
-  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
 }
 
-/* Disabled */
 .btn-primary:disabled {
-  opacity: 0.4;
+  opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 /* Footer link */
 .login-card a {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 14px;
+  color: #718096;
+  transition: color 0.3s ease;
 }
 
 .login-card a:hover {
-  color: #2563eb;
+  color: #667eea;
 }

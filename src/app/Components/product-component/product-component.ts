@@ -33,6 +33,10 @@ export class ProductComponent implements OnInit {
   editForm!: FormGroup;
   createItemForm!: FormGroup;
   invoiceItems: InvoiceProduct[] = []
+  successMessage: string = '';
+  errorMessage: string = '';
+  showDeleteConfirm = false;
+  productToDelete: number | null = null;
 
   openEditModal(product: any) {
     this.showEditModal = true;
@@ -51,13 +55,15 @@ export class ProductComponent implements OnInit {
     const id = this.selectedProduct.id;
     this.itemservice.updateRecord(id, updatedRecord).subscribe({
       next: () => {
-        alert('Record Updated Successfully');
+        this.successMessage = 'Record Updated Successfully';
         this.loadItem();
         this.closeEditModal();
+        setTimeout(() => this.successMessage = '', 3000);
       },
       error: (err) => {
         console.log(err);
-        alert('Error updating record');
+        this.errorMessage = 'Error updating record';
+        setTimeout(() => this.errorMessage = '', 3000);
       }
     })
   }
@@ -153,11 +159,13 @@ export class ProductComponent implements OnInit {
         console.log("this is the end", this.productList)
         this.createItemForm.reset();
         this.closeModal();
-        alert('Product Added Successfully');
+        this.successMessage = 'Product Added Successfully';
+        setTimeout(() => this.successMessage = '', 3000);
       },
       error: (err) => {
         console.error(err);
-        alert('Error adding product');
+        this.errorMessage = 'Error adding product';
+        setTimeout(() => this.errorMessage = '', 3000);
       }
     });
 
@@ -176,16 +184,32 @@ export class ProductComponent implements OnInit {
     return this.form.get('invoice.items') as FormArray;
   }
   deleteProduct(id: number) {
-    this.itemservice.deleteRecord(id).subscribe({
-      next: () => {
-        alert('Record Deleted Successfully');
-        this.loadItem();
-      },
-      error: (err) => {
-        console.log(err);
-        alert('Error deleting record');
-      }
-    });
+    this.productToDelete = id;
+    this.showDeleteConfirm = true;
+  }
+
+  confirmDelete() {
+    if (this.productToDelete !== null) {
+      this.itemservice.deleteRecord(this.productToDelete).subscribe({
+        next: () => {
+          this.successMessage = 'Record Deleted Successfully';
+          this.loadItem();
+          setTimeout(() => this.successMessage = '', 3000);
+          this.cancelDelete();
+        },
+        error: (err) => {
+          console.log(err);
+          this.errorMessage = 'Error deleting record';
+          setTimeout(() => this.errorMessage = '', 3000);
+          this.cancelDelete();
+        }
+      });
+    }
+  }
+
+  cancelDelete() {
+    this.showDeleteConfirm = false;
+    this.productToDelete = null;
   }
   addItem() {
     this.items.push(this.createItem());
