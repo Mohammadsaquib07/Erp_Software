@@ -33,6 +33,9 @@
                       'is-invalid': f['username'].invalid && f['username'].touched
                     }"
                   />
+                  <span class="input-group-text bg-transparent border-0">
+                    <i class="pi pi-check" [ngClass]="{'text-success': f['username'].valid && f['username'].touched, 'text-danger': f['username'].invalid && f['username'].touched, 'text-muted': !f['username'].touched}"></i>
+                  </span>
                 </div>
                 <div class="invalid-feedback d-block" *ngIf="f['username'].invalid && f['username'].touched">
                   <small *ngIf="f['username'].errors?.['required']">Username is required.</small>
