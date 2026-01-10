@@ -33,6 +33,7 @@
       <span style="display: flex; width: 100% !important; flex-wrap: wrap; flex-direction: column;">
         <div *ngIf="activePage === 'Home'" class="welcome-message">
           <h2>Welcome to ERP Dashboard</h2>
+          <button class="btn btn-success">Click</button>
           <p>Select a module from the sidebar to get started.</p>
         </div>
         <app-product-component *ngIf="activePage === 'Sales'"></app-product-component>

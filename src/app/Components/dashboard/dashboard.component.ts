@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, AfterViewInit } from '@angular/core';
+import { Component, inject, AfterViewInit,HostListener } from '@angular/core';
 import { ProductComponent } from '../product-component/product-component';
 import { AuthService } from '../../Services/auth.service';
 import { SpinnerComponent } from '../spinner/spinner.component';
@@ -70,5 +70,13 @@ export class DashboardComponent implements AfterViewInit {
     setTimeout(() => {
       this.loading.hide();
     }, 2000);
+  }
+@HostListener('window:resize',['$event'])
+
+onResize(event:Event){
+console.log(window.innerWidth)
+}
+  handleClick(){
+    alert('button is clicked')
   }
 }
