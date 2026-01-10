@@ -13,7 +13,7 @@ export class AuthService {
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   private apiUrl = "https://localhost:7246/api/Login/login";
   private http = inject(HttpClient)
-private loading = inject(LoadingServiceService)
+  private loading = inject(LoadingServiceService)
   private router = inject(Router)
   constructor() { }
 

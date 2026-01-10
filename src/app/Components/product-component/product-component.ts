@@ -175,14 +175,16 @@ export class ProductComponent implements OnInit {
   }
   private createItem(): FormGroup {
     return this.fb.group({
-      ProductName: [''],
-      Price: [0],
-      Quantity: [0]
+      productId: [null, Validators.required],
+      price: [{ value: 0, disabled: true }],
+      qty: [1, [Validators.required, Validators.min(1)]]
     });
   }
+
   get items(): FormArray {
     return this.form.get('invoice.items') as FormArray;
   }
+
   deleteProduct(id: number) {
     this.productToDelete = id;
     this.showDeleteConfirm = true;
@@ -219,10 +221,11 @@ export class ProductComponent implements OnInit {
   }
   getTotal(item: AbstractControl): number {
     const fg = item as FormGroup;
-    const qty = Number(fg.get('Quantity')?.value) || 0;
-    const price = Number(fg.get('Price')?.value) || 0;
+    const qty = Number(fg.get('qty')?.value) || 0;
+    const price = Number(fg.get('price')?.value) || 0;
     return qty * price;
   }
+
   get subtotal(): number {
     return this.items.controls
       .map(ctrl => this.getTotal(ctrl))
@@ -258,11 +261,21 @@ export class ProductComponent implements OnInit {
       }
     };
   }
-
-  isProductAlreadySelected(productId: number, rowIndex: number): boolean {
-    return this.invoiceItems.some(
-      (item, i) => item.productId === productId && i !== rowIndex
-    );
+  isProductAlreadySelected(productId: any, currentIndex: number): boolean {
+  const targetId = Number(productId);
+  return this.items.controls.some((ctrl, i) => {
+    const selectedId = ctrl.get('productId')?.value;
+    return i !== currentIndex && Number(selectedId) === targetId;
+  });
+}
+  onProductChange(index: number) {
+    const itemGroup = this.items.at(index) as FormGroup;
+    const productId = itemGroup.get('productId')?.value;
+    const product = this.productList.find(p => p.id === productId);
+    if (!product) return;
+    itemGroup.patchValue({
+      price: product.price,
+      qty: 1
+    });
   }
-
 }

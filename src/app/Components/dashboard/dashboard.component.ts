@@ -13,12 +13,10 @@ import { LoadingServiceService } from '../../Services/loading-service.service';
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements AfterViewInit {
-
   constructor(private authService:AuthService){}
   loading = inject(LoadingServiceService)
   isCollapsed: boolean = false;
   activePage: string = 'home';
-
   menuItems = [
     { label: 'Home', icon: 'pi pi-home' },
     { label: 'Sales', icon: 'pi pi-shopping-cart' },
@@ -28,7 +26,6 @@ export class DashboardComponent implements AfterViewInit {
     { label: 'Reports', icon: 'pi pi-chart-line' },
     { label: 'Settings', icon: 'pi pi-cog' }
   ];
-
   ngAfterViewInit() {
     // Initialize Bootstrap tooltips
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
@@ -36,7 +33,6 @@ export class DashboardComponent implements AfterViewInit {
       return new (window as any).bootstrap.Tooltip(tooltipTriggerEl);
     });
   }
-
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
     // Handle tooltips based on collapsed state
@@ -63,7 +59,6 @@ export class DashboardComponent implements AfterViewInit {
   openPage(page: string) {
     this.activePage = page;
   }
-
   logOut() {
     this.loading.show();
     this.authService.logOut();
@@ -76,7 +71,7 @@ export class DashboardComponent implements AfterViewInit {
 onResize(event:Event){
 console.log(window.innerWidth)
 }
-  handleClick(){
+handleClick(){
     alert('button is clicked')
-  }
+}
 }

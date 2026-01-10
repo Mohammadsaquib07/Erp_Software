@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../Services/auth.service';
@@ -14,13 +14,11 @@ import { LoadingServiceService } from '../../Services/loading-service.service';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-
   loginForm:FormGroup;
   private loading = inject(LoadingServiceService)
   passwordPattern: string = '^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,}$'
   showPassword: boolean = false;
   errorMessage: string = '';
-
   constructor(private fb: FormBuilder,private authServiceObj:AuthService,private router:Router) { 
      this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
@@ -30,12 +28,11 @@ export class LoginComponent {
    get f(){
     return this.loginForm.controls;
    }
-
    togglePasswordVisibility() {
      this.showPassword = !this.showPassword;
    }
-
     onSubmit() {
+      debugger
     if (this.loginForm.valid) {
       this.loading.show()
       this.authServiceObj.login(this.loginForm.value).subscribe({
@@ -51,5 +48,5 @@ export class LoginComponent {
       console.log('Form is invalid!');
       this.loginForm.markAllAsTouched();
     }
-  }
+    }
 }

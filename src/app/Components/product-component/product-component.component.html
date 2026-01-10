@@ -24,7 +24,8 @@
   </div>
 
   <!-- Delete Confirmation Modal -->
-  <div class="modal fade" [ngClass]="{'show': showDeleteConfirm, 'd-block': showDeleteConfirm}" tabindex="-1" [attr.aria-hidden]="!showDeleteConfirm">
+  <div class="modal fade" [ngClass]="{'show': showDeleteConfirm, 'd-block': showDeleteConfirm}" tabindex="-1"
+    [attr.aria-hidden]="!showDeleteConfirm">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -131,22 +132,28 @@
               </tr>
             </thead>
             <tbody formArrayName="items">
-              <tr *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+              <tr *ngFor="let row of items.controls; let rowIndex = index" [formGroupName]="rowIndex">
                 <td>
-                  <select class="form-select form-select-sm shadow-sm" formControlName="ProductName">
+                  <select class="form-select form-select-sm shadow-sm" formControlName="productId"
+                    (change)="onProductChange(rowIndex)">
                     <option value="" disabled>Select Product</option>
-
-                    <option *ngFor="let item of productList" [value]="item.name"
-                      [disabled]="isProductAlreadySelected(item.id, i) || item.stock === 0">
-                      {{ item.name }}
+                    <option *ngFor="let p of productList" [value]="p.id"
+                      [disabled]="isProductAlreadySelected(p.id, rowIndex) || p.stock === 0">
+                      {{ p.name }} ({{ p.stock }} in stock)
                     </option>
                   </select>
                 </td>
-                <td><input type="number" formControlName="Quantity" min="1"></td>
-                <td><input type="number" formControlName="Price" min="0" readonly></td>
-                <td class="text-right font-weight-bold">₹{{ getTotal(item) }}</td>
                 <td>
-                  <button style="border:none !important" type="button" (click)="removeItem(i)">
+                  <input type="number" formControlName="qty" min="1" />
+                </td>
+                <td>
+                  <input type="number" formControlName="price" readonly />
+                </td>
+                <td class="text-right font-weight-bold">
+                  ₹{{ getTotal(row) }}
+                </td>
+                <td>
+                  <button type="button" (click)="removeItem(rowIndex)" style="border:none">
                     <i class="bi bi-x-lg"></i>
                   </button>
                 </td>
@@ -272,7 +279,6 @@
             <label class="form-label">Price (₹)</label>
             <input type="number" class="form-control" formControlName="Price" placeholder="0.00"
               [ngClass]="{'is-invalid': f['Price'].touched && f['Price'].invalid,'is-valid':f['Price'].touched && f['Price'].valid}" />
-
           </div>
           <div class="col-md-6">
             <label class="form-label">Stock</label>
