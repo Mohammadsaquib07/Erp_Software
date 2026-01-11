@@ -17,7 +17,6 @@ private apiUrl = "https://localhost:7246/api/Item";
 constructor(private httpClient:HttpClient) { }
 
 getAllItems():Observable<any[]>{
-  debugger
   return this.httpClient.get<any[]>(this.apiUrl);
 }
 

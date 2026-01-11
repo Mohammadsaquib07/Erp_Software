@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { InputTextModule } from 'primeng/inputtext';
 import {
   AbstractControl,
@@ -12,6 +12,8 @@ import {
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { ItemService, Product } from '../../Services/item.service';
 import { FullInvoiceRequest, InvoiceItem, InvoiceProduct, } from '../../../Types/Invoice';
+import { DashboardService } from '../../Services/dashboard.service';
+import { DashboardCardsDto } from '../../Model/DashboardCardsDto';
 
 @Component({
   selector: 'app-product-component',
@@ -37,6 +39,9 @@ export class ProductComponent implements OnInit {
   errorMessage: string = '';
   showDeleteConfirm = false;
   productToDelete: number | null = null;
+
+  dashboardService = inject(DashboardService)
+  dashboardDataList:DashboardCardsDto[]=[]
 
   openEditModal(product: any) {
     this.showEditModal = true;
@@ -135,6 +140,17 @@ export class ProductComponent implements OnInit {
       Price: [null, [Validators.required, Validators.min(0)]],
       Stock: [null, [Validators.required, Validators.min(0)]]
     });
+
+    this.dashboardService.getTopCardData().subscribe({
+     next: (item:DashboardCardsDto[]) => {
+      this.dashboardDataList = item;
+     },
+     error: (err) => {
+        console.error(err);
+        this.errorMessage = 'Error adding product';
+        setTimeout(() => this.errorMessage = '', 3000);
+      }
+    })
   }
   get f() {
     /*This is just getter function..It must return values so*/

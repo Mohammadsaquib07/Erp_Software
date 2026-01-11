@@ -22,8 +22,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Delete Confirmation Modal -->
   <div class="modal fade" [ngClass]="{'show': showDeleteConfirm, 'd-block': showDeleteConfirm}" tabindex="-1"
     [attr.aria-hidden]="!showDeleteConfirm">
     <div class="modal-dialog">
@@ -43,9 +41,10 @@
     </div>
   </div>
   <div class="modal-backdrop fade show" *ngIf="showDeleteConfirm"></div>
-  <div class="kpi-row">
+  <div class="kpi-row" *ngFor="let item of dashboardDataList; let i = index">
+    <!-- {{dashboardDataList | json }} -->
     <div class="kpi-card green">
-      <h4>Today’s Sales</h4>
+      <h4>{{item}}Today’s Sales</h4>
       <p class="value">₹12,450</p>
     </div>
     <div class="kpi-card blue">
