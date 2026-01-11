@@ -10,8 +10,8 @@ export class DashboardService {
   private apiUrl = "https://localhost:7246/api/Dashboard/cards"
   constructor(private http:HttpClient) { }
 
-  getTopCardData():Observable<DashboardCardsDto[]>{
-   return this.http.get<DashboardCardsDto[]>(this.apiUrl)
+  getTopCardData():Observable<DashboardCardsDto>{
+   return this.http.get<DashboardCardsDto>(this.apiUrl)
   }
 
 }

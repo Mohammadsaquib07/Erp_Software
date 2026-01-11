@@ -39,9 +39,9 @@ export class ProductComponent implements OnInit {
   errorMessage: string = '';
   showDeleteConfirm = false;
   productToDelete: number | null = null;
-
   dashboardService = inject(DashboardService)
-  dashboardDataList:DashboardCardsDto[]=[]
+
+  dashboardData!: DashboardCardsDto;
 
   openEditModal(product: any) {
     this.showEditModal = true;
@@ -140,11 +140,9 @@ export class ProductComponent implements OnInit {
       Price: [null, [Validators.required, Validators.min(0)]],
       Stock: [null, [Validators.required, Validators.min(0)]]
     });
-
+    debugger
     this.dashboardService.getTopCardData().subscribe({
-     next: (item:DashboardCardsDto[]) => {
-      this.dashboardDataList = item;
-     },
+     next: data => this.dashboardData = data,
      error: (err) => {
         console.error(err);
         this.errorMessage = 'Error adding product';
@@ -241,7 +239,6 @@ export class ProductComponent implements OnInit {
     const price = Number(fg.get('price')?.value) || 0;
     return qty * price;
   }
-
   get subtotal(): number {
     return this.items.controls
       .map(ctrl => this.getTotal(ctrl))
@@ -283,7 +280,7 @@ export class ProductComponent implements OnInit {
     const selectedId = ctrl.get('productId')?.value;
     return i !== currentIndex && Number(selectedId) === targetId;
   });
-}
+  }
   onProductChange(index: number) {
     const itemGroup = this.items.at(index) as FormGroup;
     const productId = itemGroup.get('productId')?.value;

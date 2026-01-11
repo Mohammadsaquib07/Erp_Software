@@ -1,9 +1,7 @@
 .sales-wrapper {
-  /* fill the available space but avoid forcing horizontal scroll */
   padding: 20px;
   background: #f7f9fc;
   box-sizing: border-box;
-  /* NEW: prevent accidental horizontal scroll */
   overflow-x: hidden;
   animation: fadeIn 0.3s ease;
 }
@@ -39,6 +37,7 @@
 
 .kpi-card:hover {
   transform: translateY(-5px);
+  cursor: pointer;
 }
 
 .kpi-card h4 {

@@ -41,25 +41,25 @@
     </div>
   </div>
   <div class="modal-backdrop fade show" *ngIf="showDeleteConfirm"></div>
-  <div class="kpi-row" *ngFor="let item of dashboardDataList; let i = index">
-    <!-- {{dashboardDataList | json }} -->
+  <div class="kpi-row">
     <div class="kpi-card green">
-      <h4>{{item}}Today’s Sales</h4>
-      <p class="value">₹12,450</p>
+      <span class="label">Today’s Sales</span>
+      <p class="value bi bi-currency-rupee">{{dashboardData.todayslSales}}</p>
     </div>
     <div class="kpi-card blue">
-      <h4>Total Orders</h4>
-      <p class="value">58</p>
+      <span class="label">Total Orders</span>
+      <p class="value d-flex align-items-center gap-2 bi bi-cart">{{dashboardData.totalOrders}}</p>
     </div>
     <div class="kpi-card orange">
-      <h4>Avg. Order Value</h4>
-      <p class="value">₹215</p>
+      <span class="label">Avg. Order Value</span>
+      <p class="value bi bi-currency-rupee">{{dashboardData.avgOrderValue}}</p>
     </div>
     <div class="kpi-card purple">
-      <h4>Top Product</h4>
-      <p class="value">Classic Watch</p>
+      <span class="label">Top Product</span>
+      <p class="value d-flex align-items-center bi bi-graph-up gap-2">{{dashboardData.topProduct}}</p>
     </div>
-  </div>
+  </div> 
+  
   <div class="orders-section">
     <h3>Recent Orders</h3>
     <table class="orders-table">
