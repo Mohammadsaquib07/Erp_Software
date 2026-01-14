@@ -27,7 +27,6 @@ return this.httpClient.put<any>(`${this.apiUrl}/${id}`,data);
 deleteRecord(id:number):Observable<any>{
 return this.httpClient.delete<any>(`${this.apiUrl}/${id}`);
 }
-
 addItem(data:Product):Observable<Product>{
   return this.httpClient.post<any>(this.apiUrl,data);
 }
