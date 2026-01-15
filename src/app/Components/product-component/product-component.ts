@@ -14,6 +14,8 @@ import { ItemService, Product } from '../../Services/item.service';
 import { FullInvoiceRequest, InvoiceItem, InvoiceProduct, } from '../../../Types/Invoice';
 import { DashboardService } from '../../Services/dashboard.service';
 import { DashboardCardsDto } from '../../Model/DashboardCardsDto';
+import { RecentOrderDto } from '../../../Types/RecentOrderDto';
+import { RecentOrdersService } from '../../Services/RecentOrderService/recent-orders.service';
 
 @Component({
   selector: 'app-product-component',
@@ -40,7 +42,8 @@ export class ProductComponent implements OnInit {
   showDeleteConfirm = false;
   productToDelete: number | null = null;
   dashboardService = inject(DashboardService)
-
+  recentOrderService = inject(RecentOrdersService)
+  recentOrders: RecentOrderDto[] = [];
   dashboardData!: DashboardCardsDto;
 
   openEditModal(product: any) {
@@ -140,15 +143,18 @@ export class ProductComponent implements OnInit {
       Price: [null, [Validators.required, Validators.min(0)]],
       Stock: [null, [Validators.required, Validators.min(0)]]
     });
-    debugger
     this.dashboardService.getTopCardData().subscribe({
-     next: data => this.dashboardData = data,
-     error: (err) => {
+      next: data => this.dashboardData = data,
+      error: (err) => {
         console.error(err);
         this.errorMessage = 'Error adding product';
         setTimeout(() => this.errorMessage = '', 3000);
       }
     })
+    this.recentOrderService.getRecentOrders(10).subscribe({
+      next: (data) => this.recentOrders = data,
+      error: (err) => console.error(err)
+    });
   }
   get f() {
     /*This is just getter function..It must return values so*/
@@ -275,11 +281,11 @@ export class ProductComponent implements OnInit {
     };
   }
   isProductAlreadySelected(productId: any, currentIndex: number): boolean {
-  const targetId = Number(productId);
-  return this.items.controls.some((ctrl, i) => {
-    const selectedId = ctrl.get('productId')?.value;
-    return i !== currentIndex && Number(selectedId) === targetId;
-  });
+    const targetId = Number(productId);
+    return this.items.controls.some((ctrl, i) => {
+      const selectedId = ctrl.get('productId')?.value;
+      return i !== currentIndex && Number(selectedId) === targetId;
+    });
   }
   onProductChange(index: number) {
     const itemGroup = this.items.at(index) as FormGroup;

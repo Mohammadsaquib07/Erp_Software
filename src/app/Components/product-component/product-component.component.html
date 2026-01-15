@@ -58,8 +58,8 @@
       <span class="label">Top Product</span>
       <p class="value d-flex align-items-center bi bi-graph-up gap-2">{{dashboardData.topProduct}}</p>
     </div>
-  </div> 
-  
+  </div>
+
   <div class="orders-section">
     <h3>Recent Orders</h3>
     <table class="orders-table">
@@ -73,19 +73,20 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>#1001</td>
-          <td>Ravi Kumar</td>
-          <td>3</td>
-          <td>₹1,200</td>
-          <td><span class="status paid">Paid</span></td>
-        </tr>
-        <tr>
-          <td>#1002</td>
-          <td>Anita Shah</td>
-          <td>1</td>
-          <td>₹250</td>
-          <td><span class="status pending">Pending</span></td>
+        <tr *ngFor="let o of recentOrders">
+          <td>#{{ o.orderId }}</td>
+          <td>{{ o.customerName }}</td>
+          <td>{{ o.items }}</td>
+          <td>₹{{ o.amount }}</td>
+          <td>
+            <span class="status" 
+              [ngClass]="{
+                'danger': o.status?.toLowerCase() === 'pending',
+                'success': o.status?.toLowerCase() === 'completed'
+              }">
+              {{ o.status }}
+            </span>
+          </td>
         </tr>
       </tbody>
     </table>
