@@ -79,8 +79,7 @@
           <td>{{ o.items }}</td>
           <td>₹{{ o.amount }}</td>
           <td>
-            <span class="status" 
-              [ngClass]="{
+            <span class="status" [ngClass]="{
                 'danger': o.status?.toLowerCase() === 'pending',
                 'success': o.status?.toLowerCase() === 'completed'
               }">
@@ -136,8 +135,12 @@
                 <td>
                   <select class="form-select form-select-sm shadow-sm" formControlName="productId"
                     (change)="onProductChange(rowIndex)">
-                    <option value="" disabled>Select Product</option>
-                    <option *ngFor="let p of productList" [value]="p.id"
+                    <option [ngValue]="null" disabled>Select Product</option>
+                    <!-- <option *ngFor="let p of productList" [value]="p.id"
+                      [disabled]="isProductAlreadySelected(p.id, rowIndex) || p.stock === 0">
+                      {{ p.name }} ({{ p.stock }} in stock)
+                    </option> -->
+                    <option *ngFor="let p of productList" [ngValue]="p.id"
                       [disabled]="isProductAlreadySelected(p.id, rowIndex) || p.stock === 0">
                       {{ p.name }} ({{ p.stock }} in stock)
                     </option>
@@ -147,7 +150,10 @@
                   <input type="number" formControlName="qty" min="1" />
                 </td>
                 <td>
-                  <input type="number" formControlName="price" readonly />
+                  <div class="d-flex align-items-center gap-2">
+                    <span *ngIf="row.get('price')?.value > 0">₹{{ row.get('price')?.value |
+                      number:'1.2-2' }}</span>
+                  </div>
                 </td>
                 <td class="text-right font-weight-bold">
                   ₹{{ getTotal(row) }}
@@ -190,14 +196,12 @@
       </button>
     </div>
     <div class="drawer-body px-3">
-      <!-- FORM -->
       <div class="py-3 border-bottom" [formGroup]="createItemForm">
         <div class="row align-items-center mb-3">
           <div class="col-5">
             Product Name
           </div>
           <div class="col-7">
-            <!-- <input type="text" class="form-control"> -->
             <input type="text" class="form-control" formControlName="Name" placeholder="Enter Product Name"
               [ngClass]="{'is-invalid': Add['Name'].touched && Add['Name'].invalid,'is-valid':Add['Name'].touched && Add['Name'].valid}" />
           </div>

@@ -58,7 +58,9 @@ export class ProductComponent implements OnInit {
   updateRecord() {
     if (this.editForm.invalid) return;
     const updatedRecord = {
-      ...this.editForm.value
+      Name: this.f['Name'].value?.trim(),
+      Price: this.f['Price'].value,
+      Stock: this.f['Stock'].value
     }
     const id = this.selectedProduct.id;
     this.itemservice.updateRecord(id, updatedRecord).subscribe({
@@ -196,7 +198,7 @@ export class ProductComponent implements OnInit {
   private createItem(): FormGroup {
     return this.fb.group({
       productId: [null, Validators.required],
-      price: [{ value: 0, disabled: true }],
+      price: [0],
       qty: [1, [Validators.required, Validators.min(1)]]
     });
   }
@@ -288,13 +290,30 @@ export class ProductComponent implements OnInit {
     });
   }
   onProductChange(index: number) {
+    // debugger
     const itemGroup = this.items.at(index) as FormGroup;
-    const productId = itemGroup.get('productId')?.value;
-    const product = this.productList.find(p => p.id === productId);
-    if (!product) return;
-    itemGroup.patchValue({
-      price: product.price,
-      qty: 1
-    });
+    // const productId = itemGroup.get('productId')?.value;
+    // const product = this.productList.find(p => p.id === productId);
+    // if (!product) return;
+    // itemGroup.patchValue({
+    //   price: product.price,
+    //   qty: 1
+    // });
+    const productId = Number(itemGroup.get('productId')?.value);
+
+const product = this.productList.find(
+  p => Number(p.id) === productId
+);
+
+if (!product) {
+  console.error('Product not found for ID:', productId);
+  return;
+}
+
+itemGroup.patchValue({
+  price: product.price,
+  qty: 1
+});
+
   }
 }
