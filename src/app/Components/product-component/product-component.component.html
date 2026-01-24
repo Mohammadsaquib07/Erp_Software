@@ -104,22 +104,22 @@
     </div>
     <div class="drawer-body">
       <form [formGroup]="form">
-        <div formGroupName="customer">
-          <div class="form-section">
+        <div formGroupName="customer" class="customer-section">
+          <div class="form-section mb-4">
             <label>Customer Name</label>
             <input type="text" formControlName="Name" placeholder="Enter customer name" />
           </div>
-          <div class="form-section">
+          <div class="form-section mb-4">
             <label>Email</label>
             <input type="email" formControlName="Email" placeholder="customer@email.com" />
           </div>
         </div>
-        <div formGroupName="invoice" class="form-section">
+        <div formGroupName="invoice" class="form-section mb-4">
           <label>Notes</label>
           <input type="text" formControlName="notes" placeholder="Notes" />
         </div>
         <div formGroupName="invoice" class="form-section">
-          <label>Items</label>
+          <label class="mb-3 d-block">Items</label>
           <table class="items-table">
             <thead>
               <tr>
@@ -170,12 +170,12 @@
             <i class="pi pi-plus-circle"></i> Add Item
           </button>
         </div>
-        <div class="summary">
-          <div class="row">
+        <div class="summary mt-4 pt-4">
+          <div class="row mb-3">
             <span>Subtotal</span>
             <span>₹{{ subtotal | number:'1.2-2' }}</span>
           </div>
-          <div class="row">
+          <div class="row mb-3">
             <span>Tax (18%)</span>
             <span>₹{{ tax | number:'1.2-2' }}</span>
           </div>

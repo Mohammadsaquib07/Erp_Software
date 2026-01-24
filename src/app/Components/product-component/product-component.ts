@@ -290,30 +290,22 @@ export class ProductComponent implements OnInit {
     });
   }
   onProductChange(index: number) {
-    // debugger
     const itemGroup = this.items.at(index) as FormGroup;
-    // const productId = itemGroup.get('productId')?.value;
-    // const product = this.productList.find(p => p.id === productId);
-    // if (!product) return;
-    // itemGroup.patchValue({
-    //   price: product.price,
-    //   qty: 1
-    // });
     const productId = Number(itemGroup.get('productId')?.value);
 
-const product = this.productList.find(
-  p => Number(p.id) === productId
-);
+    const product = this.productList.find(
+      p => Number(p.id) === productId
+    );
 
-if (!product) {
-  console.error('Product not found for ID:', productId);
-  return;
-}
+    if (!product) {
+      console.error('Product not found for ID:', productId);
+      return;
+    }
 
-itemGroup.patchValue({
-  price: product.price,
-  qty: 1
-});
+    itemGroup.patchValue({
+      price: product.price,
+      qty: 1
+    });
 
   }
 }
