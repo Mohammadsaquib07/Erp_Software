@@ -8,7 +8,7 @@
     </div>
     <ul class="nav-links">
       <li *ngFor="let item of menuItems" (click)="openPage(item.label)" [class.active]="activePage === item.label"
-          [attr.data-bs-toggle]="isCollapsed ? 'tooltip' : null"
+          [attr.data-bs-toggle]="isCollapsed ? 'tooltip' : 'null'"
           [attr.data-bs-placement]="'right'"
           [attr.title]="isCollapsed ? item.label : null">
         <i [class]="item.icon">
@@ -27,17 +27,289 @@
           <li><a class="dropdown-item" (click)="logOut()">Logout</a></li>
         </ul>
       </div>
-
     </header>
     <div class="rightPanel">
-      <span style="display: flex; width: 100% !important; flex-wrap: wrap; flex-direction: column;">
-        <div *ngIf="activePage === 'Home'" class="welcome-message">
-          <h2>Welcome to ERP Dashboard</h2>
-          <button class="btn btn-success">Click</button>
-          <p>Select a module from the sidebar to get started.</p>
+      <div *ngIf="activePage === 'Home'" class="dashboard-container">
+        <div class="dashboard-header">
+          <div class="header-content">
+            <h1 class="dashboard-title">Dashboard</h1>
+            <p class="header-subtitle">Business Overview & Analytics</p>
+          </div>
+          <div class="header-info">
+            <div class="date-time">
+              <p class="current-date">Saturday, January 25, 2026</p>
+              <p class="current-time" id="currentTime">10:30 AM</p>
+            </div>
+          </div>
         </div>
-        <app-product-component *ngIf="activePage === 'Sales'"></app-product-component>
-      </span>
+
+        <!-- Quick Stats Cards Section -->
+        <div class="stats-grid">
+          <!-- Card 1: Total Sales -->
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-icon total-sales-icon">
+                <i class="pi pi-dollar"></i>
+              </span>
+              <h3 class="stat-label">Total Sales</h3>
+            </div>
+            <div class="stat-value">$12,450</div>
+            <p class="stat-subtitle">Today</p>
+            <div class="stat-change positive">
+              <i class="pi pi-arrow-up"></i> 12.5% from yesterday
+            </div>
+          </div>
+
+          <!-- Card 2: Transactions -->
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-icon transactions-icon">
+                <i class="pi pi-shopping-cart"></i>
+              </span>
+              <h3 class="stat-label">Transactions</h3>
+            </div>
+            <div class="stat-value">342</div>
+            <p class="stat-subtitle">Completed Today</p>
+            <div class="stat-change positive">
+              <i class="pi pi-arrow-up"></i> 18 more than yesterday
+            </div>
+          </div>
+
+          <!-- Card 3: Active Users -->
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-icon users-icon">
+                <i class="pi pi-users"></i>
+              </span>
+              <h3 class="stat-label">Active Users</h3>
+            </div>
+            <div class="stat-value">5</div>
+            <p class="stat-subtitle">Currently Online</p>
+            <div class="stat-subtitle-small">3 Cashiers, 2 Managers</div>
+          </div>
+
+          <!-- Card 4: Pending Payments -->
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-icon pending-icon">
+                <i class="pi pi-exclamation-circle"></i>
+              </span>
+              <h3 class="stat-label">Pending Payments</h3>
+            </div>
+            <div class="stat-value">$3,250</div>
+            <p class="stat-subtitle">From 12 Invoices</p>
+            <div class="stat-change negative">
+              <i class="pi pi-arrow-up"></i> Action Required
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Action Buttons -->
+        <div class="quick-actions-section">
+          <h2 class="section-title">Quick Actions</h2>
+          <div class="action-buttons">
+            <button class="action-btn new-sale-btn">
+              <i class="pi pi-plus"></i>
+              <span>New Sale</span>
+            </button>
+            <button class="action-btn view-orders-btn">
+              <i class="pi pi-list"></i>
+              <span>View Orders</span>
+            </button>
+            <button class="action-btn inventory-btn">
+              <i class="pi pi-box"></i>
+              <span>Inventory Check</span>
+            </button>
+            <button class="action-btn reports-btn">
+              <i class="pi pi-chart-bar"></i>
+              <span>View Reports</span>
+            </button>
+            <button class="action-btn customer-btn">
+              <i class="pi pi-search"></i>
+              <span>Search Customer</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Charts & Analytics Section -->
+        <div class="analytics-section">
+          <div class="chart-container">
+            <div class="chart-header">
+              <h2 class="section-title">Sales Trend (Last 7 Days)</h2>
+              <div class="chart-controls">
+                <button class="chart-btn">Week</button>
+                <button class="chart-btn active">Month</button>
+                <button class="chart-btn">Year</button>
+              </div>
+            </div>
+            <div class="chart-placeholder">
+              <div class="placeholder-bar" style="height: 60%;"></div>
+              <div class="placeholder-bar" style="height: 85%;"></div>
+              <div class="placeholder-bar" style="height: 70%;"></div>
+              <div class="placeholder-bar" style="height: 90%;"></div>
+              <div class="placeholder-bar" style="height: 80%;"></div>
+              <div class="placeholder-bar" style="height: 95%;"></div>
+              <div class="placeholder-bar" style="height: 75%;"></div>
+            </div>
+            <p class="chart-note">Chart visualization will be added with actual data</p>
+          </div>
+
+          <div class="top-products">
+            <div class="top-products-header">
+              <h2 class="section-title">Top Selling Products</h2>
+            </div>
+            <div class="top-product-item">
+              <span class="product-rank">1</span>
+              <span class="product-name">Fresh Milk (2L)</span>
+              <span class="product-qty">145 units</span>
+              <span class="product-amount">$725</span>
+            </div>
+            <div class="top-product-item">
+              <span class="product-rank">2</span>
+              <span class="product-name">Whole Wheat Bread</span>
+              <span class="product-qty">98 units</span>
+              <span class="product-amount">$294</span>
+            </div>
+            <div class="top-product-item">
+              <span class="product-rank">3</span>
+              <span class="product-name">Organic Eggs (12pcs)</span>
+              <span class="product-qty">87 units</span>
+              <span class="product-amount">$522</span>
+            </div>
+            <div class="top-product-item">
+              <span class="product-rank">4</span>
+              <span class="product-name">Premium Olive Oil</span>
+              <span class="product-qty">42 units</span>
+              <span class="product-amount">$462</span>
+            </div>
+            <div class="top-product-item">
+              <span class="product-rank">5</span>
+              <span class="product-name">Fresh Vegetables Pack</span>
+              <span class="product-qty">156 units</span>
+              <span class="product-amount">$468</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Transactions & Alerts Row -->
+        <div class="bottom-section">
+          <!-- Recent Transactions Table -->
+          <div class="recent-transactions">
+            <div class="section-header">
+              <h2 class="section-title">Recent Transactions</h2>
+              <a href="#" class="view-all">View All →</a>
+            </div>
+            <div class="transactions-table">
+              <div class="table-header">
+                <div class="col-invoice">Invoice</div>
+                <div class="col-customer">Customer</div>
+                <div class="col-amount">Amount</div>
+                <div class="col-time">Time</div>
+                <div class="col-status">Status</div>
+              </div>
+
+              <div class="table-row">
+                <div class="col-invoice">#2401</div>
+                <div class="col-customer">John Smith</div>
+                <div class="col-amount">$185.50</div>
+                <div class="col-time">02:45 PM</div>
+                <div class="col-status"><span class="status-badge completed">Completed</span></div>
+              </div>
+
+              <div class="table-row">
+                <div class="col-invoice">#2400</div>
+                <div class="col-customer">Sarah Johnson</div>
+                <div class="col-amount">$245.75</div>
+                <div class="col-time">02:30 PM</div>
+                <div class="col-status"><span class="status-badge completed">Completed</span></div>
+              </div>
+
+              <div class="table-row">
+                <div class="col-invoice">#2399</div>
+                <div class="col-customer">Michael Brown</div>
+                <div class="col-amount">$98.20</div>
+                <div class="col-time">02:15 PM</div>
+                <div class="col-status"><span class="status-badge completed">Completed</span></div>
+              </div>
+
+              <div class="table-row">
+                <div class="col-invoice">#2398</div>
+                <div class="col-customer">Emily Davis</div>
+                <div class="col-amount">$567.30</div>
+                <div class="col-time">02:00 PM</div>
+                <div class="col-status"><span class="status-badge pending">Pending</span></div>
+              </div>
+
+              <div class="table-row">
+                <div class="col-invoice">#2397</div>
+                <div class="col-customer">Robert Wilson</div>
+                <div class="col-amount">$156.80</div>
+                <div class="col-time">01:45 PM</div>
+                <div class="col-status"><span class="status-badge completed">Completed</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alerts & Notifications Panel -->
+          <div class="alerts-panel">
+            <div class="section-header">
+              <h2 class="section-title">Alerts & Notifications</h2>
+            </div>
+
+            <!-- Low Stock Alert -->
+            <div class="alert-item alert-warning">
+              <div class="alert-icon">
+                <i class="pi pi-exclamation-triangle"></i>
+              </div>
+              <div class="alert-content">
+                <h4 class="alert-title">Low Stock Warning</h4>
+                <p class="alert-message">Fresh Milk (5 units remaining)</p>
+                <small class="alert-time">2 hours ago</small>
+              </div>
+            </div>
+
+            <!-- Out of Stock Alert -->
+            <div class="alert-item alert-danger">
+              <div class="alert-icon">
+                <i class="pi pi-times-circle"></i>
+              </div>
+              <div class="alert-content">
+                <h4 class="alert-title">Out of Stock</h4>
+                <p class="alert-message">Premium Ice Cream - Vanilla</p>
+                <small class="alert-time">1 hour ago</small>
+              </div>
+            </div>
+
+            <!-- Expiring Soon Alert -->
+            <div class="alert-item alert-info">
+              <div class="alert-icon">
+                <i class="pi pi-clock"></i>
+              </div>
+              <div class="alert-content">
+                <h4 class="alert-title">Expiring Soon</h4>
+                <p class="alert-message">Organic Yogurt (expires in 2 days)</p>
+                <small class="alert-time">Just now</small>
+              </div>
+            </div>
+
+            <!-- Payment Reminder -->
+            <div class="alert-item alert-secondary">
+              <div class="alert-icon">
+                <i class="pi pi-credit-card"></i>
+              </div>
+              <div class="alert-content">
+                <h4 class="alert-title">Payment Pending</h4>
+                <p class="alert-message">Customer: Emily Davis - $567.30</p>
+                <small class="alert-time">45 minutes ago</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SALES PAGE -->
+      <app-product-component *ngIf="activePage === 'Sales'"></app-product-component>
     </div>
   </main>
 </div>

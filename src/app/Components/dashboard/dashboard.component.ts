@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, AfterViewInit,HostListener } from '@angular/core';
+import { Component, inject, AfterViewInit,HostListener, OnInit, OnDestroy } from '@angular/core';
 import { ProductComponent } from '../product-component/product-component';
 import { AuthService } from '../../Services/auth.service';
 import { SpinnerComponent } from '../spinner/spinner.component';
@@ -12,11 +12,12 @@ import { LoadingServiceService } from '../../Services/loading-service.service';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent implements AfterViewInit {
+export class DashboardComponent implements AfterViewInit, OnInit, OnDestroy {
   constructor(private authService:AuthService){}
   loading = inject(LoadingServiceService)
   isCollapsed: boolean = false;
-  activePage: string = 'home';
+  activePage: string = 'Home';
+  private timeInterval: any;
   menuItems = [
     { label: 'Home', icon: 'pi pi-home' },
     { label: 'Sales', icon: 'pi pi-shopping-cart' },
@@ -26,6 +27,34 @@ export class DashboardComponent implements AfterViewInit {
     { label: 'Reports', icon: 'pi pi-chart-line' },
     { label: 'Settings', icon: 'pi pi-cog' }
   ];
+
+  ngOnInit() {
+    // Update time every second
+    this.updateTime();
+    this.timeInterval = setInterval(() => {
+      this.updateTime();
+    }, 1000);
+  }
+
+  updateTime() {
+    const now = new Date();
+    const timeElement = document.getElementById('currentTime');
+    if (timeElement) {
+      timeElement.textContent = now.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit',
+        hour12: true 
+      });
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.timeInterval) {
+      clearInterval(this.timeInterval);
+    }
+  }
+
   ngAfterViewInit() {
     // Initialize Bootstrap tooltips
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
