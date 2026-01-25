@@ -86,6 +86,10 @@ export class ProductComponent implements OnInit {
   closeModal() {
     this.showModal = false;
   }
+  selectProduct(product: any) {
+    this.selectedProduct = product;
+    this.showModal = false;
+  }
   constructor(
     private routerObj: Router,
     private fb: FormBuilder,
