@@ -837,7 +837,7 @@
 }
 
 .btn-save-invoice {
-  background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+  background: linear-gradient( 135deg, #2c3e50 0%, #34495e 100%);
   color: #ffffff;
   box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
 }

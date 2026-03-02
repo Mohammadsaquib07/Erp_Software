@@ -202,13 +202,17 @@
 
         <!-- Action Buttons -->
         <div class="invoice-actions">
-          <button class="btn-save-invoice" type="button" (click)="saveInvoice()">
+          <button  class="btn-save-invoice" [disabled]="form.invalid" type="button" (click)="saveInvoice()">
             <i class="pi pi-check"></i> Save Invoice
           </button>
           <button class="btn-cancel-invoice" type="button" (click)="closeInvoice()">
             Cancel
           </button>
+          
         </div>
+        <div class="border">
+{{invoiceResponseData | json}}
+          </div>
       </form>
     </div>
   </div>

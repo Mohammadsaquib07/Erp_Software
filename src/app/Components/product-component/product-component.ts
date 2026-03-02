@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule, JsonPipe } from '@angular/common';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { InputTextModule } from 'primeng/inputtext';
 import {
   AbstractControl,
@@ -9,21 +9,24 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-import { Router, RouterModule, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { ItemService, Product } from '../../Services/item.service';
-import { FullInvoiceRequest, InvoiceItem, InvoiceProduct, } from '../../../Types/Invoice';
+import { CreateInvoiceRequest, DetailedInvoiceResponse, FullInvoiceRequest, InvoiceItem, InvoiceProduct, } from '../../../Types/Invoice';
 import { DashboardService } from '../../Services/dashboard.service';
 import { DashboardCardsDto } from '../../Model/DashboardCardsDto';
 import { RecentOrderDto } from '../../../Types/RecentOrderDto';
 import { RecentOrdersService } from '../../Services/RecentOrderService/recent-orders.service';
+import { GetInvoiceService } from '../../Services/GetInvoiceService/get-invoice.service';
+import { SaveServiceService } from '../../Services/SaveService/save-service.service';
 
 @Component({
   selector: 'app-product-component',
   standalone: true,
-  imports: [CommonModule, RouterModule, RouterOutlet, ReactiveFormsModule, InputTextModule],
+  imports: [CommonModule, RouterModule, RouterOutlet, ReactiveFormsModule, InputTextModule,JsonPipe],
   templateUrl: './product-component.component.html',
   styleUrls: ['./product-component.component.css']
 })
+
 export class ProductComponent implements OnInit {
   form: FormGroup;
   isInvoiceOpen = false;
@@ -45,7 +48,11 @@ export class ProductComponent implements OnInit {
   recentOrderService = inject(RecentOrdersService)
   recentOrders: RecentOrderDto[] = [];
   dashboardData!: DashboardCardsDto;
-
+  private getInvoiceService  = inject(GetInvoiceService)
+  private route = inject(ActivatedRoute)
+  invoiceResponseData = signal<DetailedInvoiceResponse | null>(null);
+  private SaveService = inject(SaveServiceService)
+ private router = inject(Router)
   openEditModal(product: any) {
     this.showEditModal = true;
     this.selectedProduct = product;
@@ -137,31 +144,54 @@ export class ProductComponent implements OnInit {
   openInvoicePage1() {
     this.routerObj.navigate(['sales/invoice']);
   }
+  
   ngOnInit(): void {
-    this.loadItem();
-    this.editForm = this.fb.group({
-      Name: ['', Validators.required],
-      Price: [null, [Validators.required, Validators.min(0)]],
-      Stock: [null, [Validators.required, Validators.min(0)]]
-    });
-    this.createItemForm = this.fb.group({
-      Name: ['', Validators.required],
-      Price: [null, [Validators.required, Validators.min(0)]],
-      Stock: [null, [Validators.required, Validators.min(0)]]
-    });
-    this.dashboardService.getTopCardData().subscribe({
-      next: data => this.dashboardData = data,
-      error: (err) => {
-        console.error(err);
-        this.errorMessage = 'Error adding product';
-        setTimeout(() => this.errorMessage = '', 3000);
-      }
-    })
-    this.recentOrderService.getRecentOrders(10).subscribe({
-      next: (data) => this.recentOrders = data,
-      error: (err) => console.error(err)
+  // 1. Load initial data
+  this.loadItem();
+  this.initForms(); // Moved form logic to a helper for readability
+
+  // 2. Load Dashboard Statistics
+  this.dashboardService.getTopCardData().subscribe({
+    next: data => this.dashboardData = data,
+    error: (err) => {
+      console.error(err);
+      this.errorMessage = 'Error loading dashboard data';
+      setTimeout(() => this.errorMessage = '', 3000);
+    }
+  });
+
+  // 3. Load Recent Orders
+  this.recentOrderService.getRecentOrders(10).subscribe({
+    next: (data) => this.recentOrders = data,
+    error: (err) => console.error('Order load error:', err)
+  });
+
+  // 4. Handle Invoice Loading (Conditional)
+  const idParam = this.route.snapshot.paramMap.get('id');
+  if (idParam) {
+    const id = Number(idParam);
+    this.getInvoiceService.getInvoiceById(id).subscribe({
+      next: (res) => {
+        this.invoiceResponseData = res;
+        // Optional: If you want to pre-fill the form with this data:
+        // this.patchFormWithInvoice(res);
+      },
+      error: (err) => console.error('Invoice load error:', err)
     });
   }
+}
+
+// Helper to keep ngOnInit clean
+private initForms(): void {
+  const formConfig = {
+    Name: ['', Validators.required],
+    Price: [null, [Validators.required, Validators.min(0)]],
+    Stock: [null, [Validators.required, Validators.min(0)]]
+  };
+
+  this.editForm = this.fb.group(formConfig);
+  this.createItemForm = this.fb.group(formConfig);
+}
   get f() {
     /*This is just getter function..It must return values so*/
     /*whatever controls you have created in UI all controls will return this getter function*/
@@ -263,28 +293,42 @@ export class ProductComponent implements OnInit {
     return this.subtotal + this.tax;
   }
   saveInvoice() {
-    const customerGroup = this.form.get('customer') as FormGroup;
-    const invoiceGroup = this.form.get('invoice') as FormGroup;
-    const payload: FullInvoiceRequest = {
-      isNewCustomer: this.form.value.isNewCustomer,
-      customer: {
-        customerId: 0,
-        name: customerGroup.value.Name,
-        email: customerGroup.value.Email,
-        phone: customerGroup.value.Phone,
-        billingAddress: customerGroup.value.BillingAddress
-      },
-      invoice: {
-        customerId: 0, // backend will update
-        notes: invoiceGroup.value.notes,
-        createdBy: invoiceGroup.value.createdBy,
-        items: this.items.value.map((i: any) => ({
-          productName: i.ProductName,
-          price: i.Price,
-          quantity: i.Quantity
-        }))
-      }
-    };
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
+  }
+  const formValue = this.form.getRawValue();
+  const payload: CreateInvoiceRequest = {
+    IsNewCustomer: formValue.isNewCustomer,
+    CustomerId: !formValue.isNewCustomer ? formValue.customer.customerId : null,
+    Customer: formValue.isNewCustomer ? {
+      Name: formValue.customer.Name,
+      Email: formValue.customer.Email,
+      Phone: formValue.customer.Phone,
+      BillingAddress: formValue.customer.BillingAddress
+    } : null,
+
+    InvoiceDate: new Date().toISOString(),
+
+    Notes: formValue.invoice.notes,
+
+    Items: formValue.invoice.items.map((item: any) => ({
+      ProductId: item.productId,
+      Quantity: item.qty
+    }))
+  };
+  this.SaveService.saveInvoice(payload).subscribe({
+    next: (res) => {
+      console.log('Invoice Created Successfully', res);
+      // 'res' is the JSON response with the invoiceId we discussed earlier
+      this.invoiceResponseData = res; 
+    },
+    error: (err) => console.error('Backend Error:', err)
+  });
+  }
+   private getProductName(productId: number): string {
+  const product = this.productList.find(p => p.id === productId);
+  return product ? product.name : 'Unknown Product';
   }
   isProductAlreadySelected(productId: any, currentIndex: number): boolean {
     const targetId = Number(productId);
