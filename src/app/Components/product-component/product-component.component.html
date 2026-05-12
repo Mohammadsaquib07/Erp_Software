@@ -41,9 +41,9 @@
     </div>
   </div>
   <div class="modal-backdrop fade show" *ngIf="showDeleteConfirm"></div>
-  <div class="kpi-row">
+  <div class="kpi-row" *ngIf="dashboardData">
     <div class="kpi-card green">
-      <span class="label">Today’s Sales</span>
+      <span class="label">Today's Sales</span>
       <p class="value bi bi-currency-rupee">{{dashboardData.todayslSales}}</p>
     </div>
     <div class="kpi-card blue">
@@ -80,8 +80,8 @@
           <td>₹{{ o.amount }}</td>
           <td>
             <span class="status" [ngClass]="{
-                'danger': o.status?.toLowerCase() === 'pending',
-                'success': o.status?.toLowerCase() === 'completed'
+                'danger': o.status.toLowerCase() === 'pending',
+                'success': o.status.toLowerCase() === 'completed'
               }">
               {{ o.status }}
             </span>
@@ -92,7 +92,7 @@
   </div>
   <div class="actions">
     <button class="btn primary" (click)="openInvoicePage()">+ New Invoice</button>
-    <button class="btn secondary">Print Report</button>
+    <button class="btn secondary" (click)="viewPrintReports()">Print Report</button>
     <button class="btn secondary" (click)="openManageProductPage()">Manage Products</button>
   </div>
   <div class="invoice-drawer" [class.open]="isInvoiceOpen">
@@ -350,7 +350,7 @@
         <div class="form-field">
           <label>Product Name <span class="required">*</span></label>
           <input type="text" class="professional-input modal-input" formControlName="Name" placeholder="Enter product name"
-            [ngClass]="{'is-invalid': f['Name'].touched && f['tName'].invalid,'is-valid':f['Name'].touched && f['tName'].valid}" />
+            [ngClass]="{'is-invalid': f['Name'].touched && f['Name'].invalid,'is-valid':f['Name'].touched && f['Name'].valid}" />
         </div>
 
         <div class="edit-form-grid">
@@ -378,3 +378,9 @@
     </form>
   </div>
 </div>
+
+<!-- Backdrop for Report Drawer -->
+<div class="drawer-backdrop" *ngIf="isReportOpen" (click)="closeReportPage()"></div>
+
+<!-- Print Report Drawer -->
+<app-print-report *ngIf="isReportOpen" (closeReport)="closeReportPage()"></app-print-report>

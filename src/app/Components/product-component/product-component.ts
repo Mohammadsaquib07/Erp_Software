@@ -18,11 +18,12 @@ import { RecentOrderDto } from '../../../Types/RecentOrderDto';
 import { RecentOrdersService } from '../../Services/RecentOrderService/recent-orders.service';
 import { GetInvoiceService } from '../../Services/GetInvoiceService/get-invoice.service';
 import { SaveServiceService } from '../../Services/SaveService/save-service.service';
+import { PrintReportComponent } from '../print-report/print-report.component';
 
 @Component({
   selector: 'app-product-component',
   standalone: true,
-  imports: [CommonModule, RouterModule, RouterOutlet, ReactiveFormsModule, InputTextModule,JsonPipe],
+  imports: [CommonModule, RouterModule, RouterOutlet, ReactiveFormsModule, InputTextModule, JsonPipe, PrintReportComponent],
   templateUrl: './product-component.component.html',
   styleUrls: ['./product-component.component.css']
 })
@@ -31,6 +32,7 @@ export class ProductComponent implements OnInit {
   form: FormGroup;
   isInvoiceOpen = false;
   showModal = false;
+  isReportOpen = false;
   productList: any[] = []
   getList: InvoiceProduct[] = []
   tempList: any
@@ -47,7 +49,7 @@ export class ProductComponent implements OnInit {
   dashboardService = inject(DashboardService)
   recentOrderService = inject(RecentOrdersService)
   recentOrders: RecentOrderDto[] = [];
-  dashboardData!: DashboardCardsDto;
+  dashboardData: DashboardCardsDto | null = null;
   private getInvoiceService  = inject(GetInvoiceService)
   private route = inject(ActivatedRoute)
   invoiceResponseData = signal<DetailedInvoiceResponse | null>(null);
@@ -141,8 +143,21 @@ export class ProductComponent implements OnInit {
   closeInvoice() {
     this.isInvoiceOpen = false;
   }
+
+  openReportPage() {
+    this.isReportOpen = true;
+  }
+
+  closeReportPage() {
+    this.isReportOpen = false;
+  }
+
   openInvoicePage1() {
     this.routerObj.navigate(['sales/invoice']);
+  }
+
+  viewPrintReports() {
+    this.openReportPage();
   }
   
   ngOnInit(): void {

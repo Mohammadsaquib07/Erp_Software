@@ -32,9 +32,9 @@ export class LoginComponent {
      this.showPassword = !this.showPassword;
    }
     onSubmit() {
-      debugger
     if (this.loginForm.valid) {
       this.loading.show()
+      alert('called')
       this.authServiceObj.login(this.loginForm.value).subscribe({
         next: data => {
           this.router.navigate(['/dashboard'])
@@ -47,6 +47,6 @@ export class LoginComponent {
     } else {
       console.log('Form is invalid!');
       this.loginForm.markAllAsTouched();
-    }
+     }
     }
 }

@@ -48,3 +48,46 @@ export interface CustomerDto {
 export interface Invoices {
   invoiceId: number;
 }
+export interface DetailedInvoiceResponse {
+  invoiceId: number;
+  invoiceNumber: string;
+  customerId: number;
+  invoiceDate: string;
+  subtotal: number;
+  taxAmount: number;
+  totalAmount: number;
+  notes: string;
+  createdBy: string;
+  createdAt: string;
+  customer: CustomerDto; // Uses your existing CustomerDto
+  items: InvoiceItemResponse[]; // Specific to the returned items
+}
+export interface InvoiceItemResponse {
+  itemId: number;
+  invoiceId: number;
+  productName: string;
+  quantity: number;
+  price: number;
+  total: number;
+}
+
+export interface CreateCustomerDto {
+  Name: string;
+  Email?: string | null;
+  Phone?: string | null;
+  BillingAddress?: string | null;
+}
+
+export interface InvoiceItemRequestDto {
+  ProductId: number;
+  Quantity: number;
+}
+
+export interface CreateInvoiceRequest {
+  IsNewCustomer: boolean;
+  CustomerId?: number | null;
+  Customer?: CreateCustomerDto | null;
+  InvoiceDate: string; // DateTime in C#
+  Notes?: string | null;
+  Items: InvoiceItemRequestDto[];
+}

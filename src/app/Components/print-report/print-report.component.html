@@ -1,0 +1,191 @@
+<div class="report-drawer" [class.open]="true">
+  <!-- Report Header -->
+  <div class="report-drawer-header">
+    <div class="report-header-top">
+      <h2 class="report-drawer-title">Sales & Analytics Report</h2>
+      <button class="report-close-btn" (click)="close()">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+    <p class="report-subtitle">Comprehensive business intelligence and performance metrics</p>
+  </div>
+
+  <!-- Report Body -->
+  <div class="report-drawer-body">
+    <!-- Report Controls Section -->
+    <div class="report-controls-section">
+      <div class="controls-grid">
+        <div class="control-group">
+          <label>Report Type</label>
+          <select [(ngModel)]="selectedReportType" (change)="generateReport()" class="control-select">
+            <option value="sales">Sales Report</option>
+            <option value="inventory">Inventory Report</option>
+            <option value="complete">Complete Report</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>From Date</label>
+          <input type="date" [(ngModel)]="dateRangeFrom" class="control-input" />
+        </div>
+        <div class="control-group">
+          <label>To Date</label>
+          <input type="date" [(ngModel)]="dateRangeTo" class="control-input" />
+        </div>
+        <div class="control-group button-group">
+          <button class="btn-generate" (click)="generateReport()">
+            <i class="pi pi-refresh"></i> Generate
+          </button>
+          <button class="btn-print" (click)="printReport()">
+            <i class="pi pi-print"></i> Print
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Cards Section -->
+    <div class="report-section" *ngIf="selectedReportType === 'sales' || selectedReportType === 'complete'">
+      <h3 class="section-title">Performance Snapshot</h3>
+      <div class="analytics-kpi-grid">
+        <div class="analytics-kpi-card" *ngIf="dashboardData">
+          <div class="kpi-icon sales-icon">
+            <i class="pi pi-shopping-bag"></i>
+          </div>
+          <div class="kpi-content">
+            <span class="kpi-label">Today's Sales</span>
+            <span class="kpi-value">₹{{ dashboardData.todayslSales | number:'1.2-2' }}</span>
+          </div>
+        </div>
+        <div class="analytics-kpi-card" *ngIf="dashboardData">
+          <div class="kpi-icon orders-icon">
+            <i class="pi pi-shopping-cart"></i>
+          </div>
+          <div class="kpi-content">
+            <span class="kpi-label">Total Orders</span>
+            <span class="kpi-value">{{ dashboardData.totalOrders }}</span>
+          </div>
+        </div>
+        <div class="analytics-kpi-card">
+          <div class="kpi-icon completed-icon">
+            <i class="pi pi-check-circle"></i>
+          </div>
+          <div class="kpi-content">
+            <span class="kpi-label">Completed Orders</span>
+            <span class="kpi-value">{{ getCompletedOrders() }}</span>
+          </div>
+        </div>
+        <div class="analytics-kpi-card">
+          <div class="kpi-icon pending-icon">
+            <i class="pi pi-clock"></i>
+          </div>
+          <div class="kpi-content">
+            <span class="kpi-label">Pending Orders</span>
+            <span class="kpi-value">{{ getPendingOrders() }}</span>
+          </div>
+        </div>
+        <div class="analytics-kpi-card" *ngIf="dashboardData">
+          <div class="kpi-icon revenue-icon">
+            <i class="pi pi-chart-line"></i>
+          </div>
+          <div class="kpi-content">
+            <span class="kpi-label">Avg. Order Value</span>
+            <span class="kpi-value">₹{{ dashboardData.avgOrderValue | number:'1.2-2' }}</span>
+          </div>
+        </div>
+        <div class="analytics-kpi-card" *ngIf="dashboardData">
+          <div class="kpi-icon product-icon">
+            <i class="pi pi-star"></i>
+          </div>
+          <div class="kpi-content">
+            <span class="kpi-label">Top Product</span>
+            <span class="kpi-value">{{ dashboardData.topProduct }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inventory Summary -->
+    <div class="report-section" *ngIf="selectedReportType === 'inventory' || selectedReportType === 'complete'">
+      <h3 class="section-title">Inventory Status</h3>
+      <div class="inventory-summary">
+        <div class="inventory-stat">
+          <span class="stat-number">{{ productList.length || 0 }}</span>
+          <span class="stat-label">Total Products</span>
+        </div>
+        <div class="inventory-stat">
+          <span class="stat-number">{{ getInStockProducts() }}</span>
+          <span class="stat-label">In Stock</span>
+        </div>
+        <div class="inventory-stat alert">
+          <span class="stat-number">{{ getLowStockProducts().length }}</span>
+          <span class="stat-label">Low Stock Items</span>
+        </div>
+      </div>
+
+      <!-- Low Stock Alert -->
+      <div class="low-stock-alert" *ngIf="getLowStockProducts().length > 0">
+        <div class="alert-header">
+          <i class="pi pi-exclamation-triangle"></i>
+          <h4>Low Stock Alert</h4>
+        </div>
+        <table class="alert-table">
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th class="text-right">Current Stock</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let product of getLowStockProducts()" class="alert-row">
+              <td class="product-name">{{ product.name }}</td>
+              <td class="text-right">{{ product.stock }} units</td>
+              <td class="text-center"><span class="badge-reorder">Reorder</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Sales Summary -->
+    <div class="report-section" *ngIf="selectedReportType === 'sales' || selectedReportType === 'complete'">
+      <h3 class="section-title">Sales Summary</h3>
+      <div class="sales-summary">
+        <div class="summary-stat">
+          <span class="summary-label">Period Total Revenue</span>
+          <span class="summary-value">₹{{ getTotalRevenue() | number:'1.2-2' }}</span>
+        </div>
+        <div class="summary-stat">
+          <span class="summary-label">Average Order Value</span>
+          <span class="summary-value">₹{{ (getTotalRevenue() / (recentOrders.length || 1)) | number:'1.2-2' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Performing Products -->
+    <div class="report-section" *ngIf="(selectedReportType === 'sales' || selectedReportType === 'complete') && getTopProducts().length > 0">
+      <h3 class="section-title">Top Performing Products</h3>
+      <table class="performance-table">
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th class="text-right">Unit Price</th>
+            <th class="text-right">Stock Available</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of getTopProducts()">
+            <td>{{ product.name }}</td>
+            <td class="text-right">₹{{ product.price | number:'1.2-2' }}</td>
+            <td class="text-right">{{ product.stock }} units</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Report Footer -->
+    <div class="report-footer">
+      <p>Report Generated: {{ reportGeneratedDate | date: 'medium' }}</p>
+      <p class="footer-note">This is a confidential business report. Handle with care.</p>
+    </div>
+  </div>
+</div>

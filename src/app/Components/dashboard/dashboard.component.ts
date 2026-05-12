@@ -4,6 +4,7 @@ import { ProductComponent } from '../product-component/product-component';
 import { AuthService } from '../../Services/auth.service';
 import { SpinnerComponent } from '../spinner/spinner.component';
 import { LoadingServiceService } from '../../Services/loading-service.service';
+// import { ChildComponent } from './childcomponents/child/child.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,6 +18,7 @@ export class DashboardComponent implements AfterViewInit, OnInit, OnDestroy {
   loading = inject(LoadingServiceService)
   isCollapsed: boolean = false;
   activePage: string = 'Home';
+  // public username:string = "mohammad saquib kudle"
   private timeInterval: any;
   menuItems = [
     { label: 'Home', icon: 'pi pi-home' },
@@ -27,7 +29,6 @@ export class DashboardComponent implements AfterViewInit, OnInit, OnDestroy {
     { label: 'Reports', icon: 'pi pi-chart-line' },
     { label: 'Settings', icon: 'pi pi-cog' }
   ];
-
   ngOnInit() {
     // Update time every second
     this.updateTime();
