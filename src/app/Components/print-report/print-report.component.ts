@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, inject, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DashboardService } from '../../Services/dashboard.service';
 import { RecentOrdersService } from '../../Services/RecentOrderService/recent-orders.service';
@@ -16,6 +16,7 @@ import { Product } from '../../Services/item.service';
   styleUrls: ['./print-report.component.css']
 })
 export class PrintReportComponent implements OnInit {
+  @Input() reportMode: 'sales' | 'inventory' = 'sales';
   @Output() closeReport = new EventEmitter<void>();
   
   private dashboardService = inject(DashboardService);
@@ -27,7 +28,7 @@ export class PrintReportComponent implements OnInit {
   productList: Product[] = [];
   reportGeneratedDate: Date = new Date();
   
-  selectedReportType: 'sales' | 'inventory' | 'complete' = 'sales';
+  selectedReportType: 'sales' = 'sales';
   dateRangeFrom: string = '';
   dateRangeTo: string = '';
 

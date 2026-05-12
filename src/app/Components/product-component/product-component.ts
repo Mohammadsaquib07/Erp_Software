@@ -1,5 +1,5 @@
 import { CommonModule, JsonPipe } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, Input, OnInit, signal } from '@angular/core';
 import { InputTextModule } from 'primeng/inputtext';
 import {
   AbstractControl,
@@ -33,6 +33,8 @@ export class ProductComponent implements OnInit {
   isInvoiceOpen = false;
   showModal = false;
   isReportOpen = false;
+  isInventoryReportOpen = false;
+  @Input() pageMode: 'sales' | 'inventory' = 'sales';
   productList: any[] = []
   getList: InvoiceProduct[] = []
   tempList: any
@@ -158,6 +160,14 @@ export class ProductComponent implements OnInit {
 
   viewPrintReports() {
     this.openReportPage();
+  }
+
+  viewInventoryReports() {
+    this.isInventoryReportOpen = true;
+  }
+
+  closeInventoryReportPage() {
+    this.isInventoryReportOpen = false;
   }
   
   ngOnInit(): void {
@@ -370,5 +380,13 @@ private initForms(): void {
       qty: 1
     });
 
+  }
+
+  getInStockCount(): number {
+    return this.productList.filter(product => Number(product.stock) > 0).length;
+  }
+
+  getLowStockProducts(): any[] {
+    return this.productList.filter(product => Number(product.stock) < 10);
   }
 }

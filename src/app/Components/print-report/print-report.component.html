@@ -2,12 +2,16 @@
   <!-- Report Header -->
   <div class="report-drawer-header">
     <div class="report-header-top">
-      <h2 class="report-drawer-title">Sales & Analytics Report</h2>
+      <h2 class="report-drawer-title">
+        {{ reportMode === 'inventory' ? 'Inventory Report' : 'Sales & Analytics Report' }}
+      </h2>
       <button class="report-close-btn" (click)="close()">
         <i class="pi pi-times"></i>
       </button>
     </div>
-    <p class="report-subtitle">Comprehensive business intelligence and performance metrics</p>
+    <p class="report-subtitle">
+      {{ reportMode === 'inventory' ? 'Stock and product movement insights' : 'Comprehensive business intelligence and performance metrics' }}
+    </p>
   </div>
 
   <!-- Report Body -->
@@ -15,12 +19,16 @@
     <!-- Report Controls Section -->
     <div class="report-controls-section">
       <div class="controls-grid">
-        <div class="control-group">
+        <div class="control-group" *ngIf="reportMode === 'sales'">
           <label>Report Type</label>
           <select [(ngModel)]="selectedReportType" (change)="generateReport()" class="control-select">
             <option value="sales">Sales Report</option>
+          </select>
+        </div>
+        <div class="control-group" *ngIf="reportMode === 'inventory'">
+          <label>Report Type</label>
+          <select class="control-select" disabled>
             <option value="inventory">Inventory Report</option>
-            <option value="complete">Complete Report</option>
           </select>
         </div>
         <div class="control-group">
@@ -42,8 +50,49 @@
       </div>
     </div>
 
+    <div class="report-section" *ngIf="reportMode === 'inventory'">
+      <h3 class="section-title">Inventory Summary</h3>
+      <div class="inventory-summary">
+        <div class="inventory-stat">
+          <span class="stat-number">{{ productList.length || 0 }}</span>
+          <span class="stat-label">Total Products</span>
+        </div>
+        <div class="inventory-stat">
+          <span class="stat-number">{{ getInStockProducts() }}</span>
+          <span class="stat-label">In Stock</span>
+        </div>
+        <div class="inventory-stat alert">
+          <span class="stat-number">{{ getLowStockProducts().length }}</span>
+          <span class="stat-label">Low Stock Items</span>
+        </div>
+      </div>
+
+      <div class="low-stock-alert" *ngIf="getLowStockProducts().length > 0">
+        <div class="alert-header">
+          <i class="pi pi-exclamation-triangle"></i>
+          <h4>Low Stock Alert</h4>
+        </div>
+        <table class="alert-table">
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th class="text-right">Current Stock</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let product of getLowStockProducts()" class="alert-row">
+              <td class="product-name">{{ product.name }}</td>
+              <td class="text-right">{{ product.stock }} units</td>
+              <td class="text-center"><span class="badge-reorder">Reorder</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- KPI Cards Section -->
-    <div class="report-section" *ngIf="selectedReportType === 'sales' || selectedReportType === 'complete'">
+    <div class="report-section" *ngIf="reportMode === 'sales'">
       <h3 class="section-title">Performance Snapshot</h3>
       <div class="analytics-kpi-grid">
         <div class="analytics-kpi-card" *ngIf="dashboardData">
@@ -103,51 +152,8 @@
       </div>
     </div>
 
-    <!-- Inventory Summary -->
-    <div class="report-section" *ngIf="selectedReportType === 'inventory' || selectedReportType === 'complete'">
-      <h3 class="section-title">Inventory Status</h3>
-      <div class="inventory-summary">
-        <div class="inventory-stat">
-          <span class="stat-number">{{ productList.length || 0 }}</span>
-          <span class="stat-label">Total Products</span>
-        </div>
-        <div class="inventory-stat">
-          <span class="stat-number">{{ getInStockProducts() }}</span>
-          <span class="stat-label">In Stock</span>
-        </div>
-        <div class="inventory-stat alert">
-          <span class="stat-number">{{ getLowStockProducts().length }}</span>
-          <span class="stat-label">Low Stock Items</span>
-        </div>
-      </div>
-
-      <!-- Low Stock Alert -->
-      <div class="low-stock-alert" *ngIf="getLowStockProducts().length > 0">
-        <div class="alert-header">
-          <i class="pi pi-exclamation-triangle"></i>
-          <h4>Low Stock Alert</h4>
-        </div>
-        <table class="alert-table">
-          <thead>
-            <tr>
-              <th>Product Name</th>
-              <th class="text-right">Current Stock</th>
-              <th class="text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let product of getLowStockProducts()" class="alert-row">
-              <td class="product-name">{{ product.name }}</td>
-              <td class="text-right">{{ product.stock }} units</td>
-              <td class="text-center"><span class="badge-reorder">Reorder</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
     <!-- Sales Summary -->
-    <div class="report-section" *ngIf="selectedReportType === 'sales' || selectedReportType === 'complete'">
+    <div class="report-section" *ngIf="dashboardData">
       <h3 class="section-title">Sales Summary</h3>
       <div class="sales-summary">
         <div class="summary-stat">
@@ -162,7 +168,7 @@
     </div>
 
     <!-- Top Performing Products -->
-    <div class="report-section" *ngIf="(selectedReportType === 'sales' || selectedReportType === 'complete') && getTopProducts().length > 0">
+    <div class="report-section" *ngIf="getTopProducts().length > 0">
       <h3 class="section-title">Top Performing Products</h3>
       <table class="performance-table">
         <thead>

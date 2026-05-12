@@ -310,7 +310,9 @@
       </div>
 
       <!-- SALES PAGE -->
-      <app-product-component *ngIf="activePage === 'Sales'"></app-product-component>
+      <app-product-component *ngIf="activePage === 'Sales'" [pageMode]="'sales'"></app-product-component>
+      <!-- INVENTORY PAGE -->
+      <app-product-component *ngIf="activePage === 'Inventory'" [pageMode]="'inventory'"></app-product-component>
     </div>
   </main>
 </div>

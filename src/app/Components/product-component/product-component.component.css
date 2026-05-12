@@ -106,6 +106,20 @@
   font-weight: 600;
 }
 
+/* Scrollable table container for max 5 rows */
+.orders-section .orders-table-container {
+  max-height: calc(5 * 50px + 60px);
+  overflow-y: auto;
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #e0e6ed;
+}
+
+.orders-section .orders-table-container .orders-table {
+  box-shadow: none;
+  border-radius: 0;
+}
+
 .status {
   padding: 4px 10px;
   border-radius: 12px;
@@ -139,10 +153,11 @@
 /* Quick Actions */
 .actions {
   margin-top: 30px;
+  padding-top: 20px;
   display: flex;
   flex-wrap: wrap;
-  /* NEW: wrap buttons on small screens */
   gap: 15px;
+  border-top: 1px solid #e0e6ed;
 }
 
 .btn {
@@ -1005,23 +1020,23 @@
 
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f0f3f7;
+  background: #f0f2f5;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #b8c2d0;
+  background-color: #b0b8c1;
   border-radius: 10px;
-  border: 2px solid #b8c2d0;
+  border: 2px solid #f0f2f5;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #95a5a6;
+  background-color: #8a92a0;
 }
 
 /* Responsive Design for Invoice Drawer */
@@ -1618,18 +1633,20 @@
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
+right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.6);
   z-index: 1040;
   animation: fadeIn 0.3s ease;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+/* Status styles for inventory */
+.status.warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 500;
+  display: inline-block;
 }

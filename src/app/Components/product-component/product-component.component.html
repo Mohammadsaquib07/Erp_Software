@@ -1,5 +1,6 @@
-<div class="sales-wrapper">
-  <!-- Bootstrap Toast -->
+<div class="page-wrapper">
+  <div *ngIf="pageMode === 'sales'" class="sales-content">
+    <!-- Bootstrap Toast -->
   <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
     <div class="toast" [ngClass]="{'show': successMessage}" role="alert" aria-live="assertive" aria-atomic="true">
       <div class="toast-header bg-success text-white">
@@ -92,10 +93,70 @@
   </div>
   <div class="actions">
     <button class="btn primary" (click)="openInvoicePage()">+ New Invoice</button>
-    <button class="btn secondary" (click)="viewPrintReports()">Print Report</button>
-    <button class="btn secondary" (click)="openManageProductPage()">Manage Products</button>
+    <button class="btn secondary" (click)="viewPrintReports()">Print Sales Report</button>
   </div>
-  <div class="invoice-drawer" [class.open]="isInvoiceOpen">
+  </div>
+  <div *ngIf="pageMode === 'inventory'" class="sales-content">
+    <!-- Inventory KPI Cards using same grid as sales -->
+    <div class="kpi-row">
+      <div class="kpi-card green">
+        <span class="label">Total Products</span>
+        <p class="value bi bi-box-seam">{{ productList.length || 0 }}</p>
+      </div>
+      <div class="kpi-card blue">
+        <span class="label">In Stock</span>
+        <p class="value d-flex align-items-center gap-2 bi bi-check-circle">{{ getInStockCount() }}</p>
+      </div>
+      <div class="kpi-card orange">
+        <span class="label">Low Stock Items</span>
+        <p class="value bi bi-exclamation-triangle">{{ getLowStockProducts().length }}</p>
+      </div>
+      <div class="kpi-card purple">
+        <span class="label">Out of Stock</span>
+        <p class="value d-flex align-items-center bi bi-x-circle gap-2">{{ productList.length - getInStockCount() }}</p>
+      </div>
+    </div>
+
+    <!-- Inventory Products Table using same section style as orders -->
+    <div class="orders-section">
+      <h3>Product Inventory</h3>
+      <div class="orders-table-container">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let product of productList">
+              <td>{{ product.name }}</td>
+              <td>₹{{ product.price | number:'1.2-2' }}</td>
+              <td>{{ product.stock }}</td>
+              <td>
+                <span class="status" [ngClass]="{
+                    'danger': product.stock === 0,
+                    'success': product.stock > 10,
+                    'warning': product.stock <= 10 && product.stock > 0
+                  }">
+                  {{ product.stock === 0 ? 'Out of Stock' : (product.stock <= 10 ? 'Low Stock' : 'In Stock') }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" (click)="openManageProductPage()">Manage Products</button>
+      <button class="btn secondary" (click)="viewInventoryReports()">Print Inventory Report</button>
+    </div>
+  </div>
+
+  <div class="invoice-drawer" *ngIf="pageMode === 'sales'" [class.open]="isInvoiceOpen">
     <div class="invoice-drawer-header">
       <div class="invoice-header-top">
         <h2 class="invoice-drawer-title">Create Invoice</h2>
@@ -380,7 +441,8 @@
 </div>
 
 <!-- Backdrop for Report Drawer -->
-<div class="drawer-backdrop" *ngIf="isReportOpen" (click)="closeReportPage()"></div>
+<div class="drawer-backdrop" *ngIf="isReportOpen || isInventoryReportOpen" (click)="isReportOpen ? closeReportPage() : closeInventoryReportPage()"></div>
 
 <!-- Print Report Drawer -->
 <app-print-report *ngIf="isReportOpen" (closeReport)="closeReportPage()"></app-print-report>
+<app-print-report *ngIf="isInventoryReportOpen" [reportMode]="'inventory'" (closeReport)="closeInventoryReportPage()"></app-print-report>
