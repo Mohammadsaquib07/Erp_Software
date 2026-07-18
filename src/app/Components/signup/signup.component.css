@@ -1,0 +1,168 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #eaf2ff 0%, #f3ecfb 100%);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 416px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(30, 20, 60, 0.08);
+  padding: 40px 36px 32px;
+}
+
+.brand {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.brand-icon {
+  width: 32px;
+  height: 32px;
+  color: #4f6ef7;
+  margin-bottom: 12px;
+}
+
+.brand-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #6d5bd0;
+  margin: 0 0 4px;
+}
+
+.brand-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.field {
+  margin-bottom: 18px;
+}
+
+label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 8px;
+  transition: border-color 0.15s ease;
+
+  &:focus-within {
+    border-color: #6d5bd0;
+  }
+
+  &.input-error {
+    border-color: #e0554f;
+  }
+}
+
+.input-icon {
+  width: 18px;
+  height: 18px;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  color: #111827;
+  background: transparent;
+
+  &::placeholder {
+    color: #b0b5c0;
+  }
+}
+
+.toggle-visibility {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #9ca3af;
+  display: flex;
+
+  svg { width: 18px; height: 18px; }
+}
+
+.field-error {
+  display: block;
+  font-size: 12px;
+  color: #e0554f;
+  margin-top: 6px;
+}
+
+.alert {
+  font-size: 13px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.alert-error {
+  background: #fdecea;
+  color: #b3261e;
+}
+
+.alert-success {
+  background: #e8f5ee;
+  color: #1e7a46;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #7c86f2 0%, #a17fe0 100%);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  margin-top: 6px;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &:not(:disabled):hover {
+    opacity: 0.92;
+  }
+}
+
+.switch-auth {
+  text-align: center;
+  font-size: 13px;
+  color: #6b7280;
+  margin: 18px 0 0;
+
+  a {
+    color: #6d5bd0;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

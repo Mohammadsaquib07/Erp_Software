@@ -1,5 +1,9 @@
-/* Page */
-.login-wrapper {
+/* ============================================
+   Shared styles for all auth pages (login, signup, forgot-password, reset-password).
+   Import this alongside a page-specific stylesheet — don't duplicate these rules per page.
+   ============================================ */
+
+.auth-wrapper {
   background: linear-gradient(135deg, #e0f2fe 0%, #f3e8ff 100%);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   min-height: 100vh;
@@ -7,43 +11,34 @@
   overflow: hidden;
 }
 
-.login-wrapper::before {
+.auth-wrapper::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
   opacity: 0.1;
   z-index: 0;
 }
 
 /* Card */
-.login-card {
+.auth-card {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 20px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  animation: slideUp 0.6s ease-out;
+  animation: authSlideUp 0.6s ease-out;
   position: relative;
   z-index: 1;
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes authSlideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Header */
-.login-card h3 {
+.auth-card h3 {
   font-size: 24px;
   font-weight: 700;
   color: #2d3748;
@@ -54,7 +49,7 @@
   background-clip: text;
 }
 
-.login-card p {
+.auth-card p {
   font-size: 14px;
   color: #718096;
 }
@@ -117,27 +112,6 @@
   margin-top: 4px;
 }
 
-.form-check {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.form-check-input {
-  width: 1.15rem;
-  height: 1.15rem;
-  margin: 0;
-  cursor: pointer;
-  border: 1px solid #cbd5e1;
-  border-radius: 0.35rem;
-  transition: all 0.2s ease;
-}
-
-.form-check-input:focus {
-  outline: none;
-  box-shadow: 0 0 0 0.15rem rgba(102, 126, 234, 0.2);
-}
-
 .form-check-input:checked {
   background-color: #667eea;
   border-color: #667eea;
@@ -145,9 +119,6 @@
 
 .form-check-label {
   cursor: pointer;
-  font-size: 0.95rem;
-  color: #4a5568;
-  margin-bottom: 0;
 }
 
 /* Button */
@@ -177,12 +148,30 @@
 }
 
 /* Footer link */
-.login-card a {
+.auth-card a {
   font-size: 14px;
   color: #718096;
   transition: color 0.3s ease;
 }
 
-.login-card a:hover {
+.auth-card a:hover {
   color: #667eea;
+}
+
+/* Alert banners (signup duplicate-account error, success message, etc.) */
+.auth-alert {
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.auth-alert-error {
+  background: #fdecea;
+  color: #b3261e;
+}
+
+.auth-alert-success {
+  background: #e8f5ee;
+  color: #1e7a46;
 }

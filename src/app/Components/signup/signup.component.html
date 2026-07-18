@@ -1,0 +1,118 @@
+<div class="auth-wrapper d-flex align-items-center justify-content-center">
+  <div class="auth-card p-4 p-md-5" style="max-width: 420px; width: 100%;">
+
+    <div class="text-center mb-4">
+      <h3>Create Account</h3>
+      <p>Sign up to access your dashboard</p>
+    </div>
+
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" novalidate>
+
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-person"></i></span>
+          <input
+            id="username"
+            type="text"
+            class="form-control"
+            formControlName="username"
+            placeholder="Choose a username"
+            autocomplete="username"
+            [class.is-invalid]="username?.invalid && username?.touched"
+            [class.is-valid]="username?.valid && username?.touched"
+          />
+        </div>
+        @if (username?.invalid && username?.touched) {
+          <div class="invalid-feedback d-block">
+            @if (username?.errors?.['required']) { Username is required. }
+            @if (username?.errors?.['minlength']) { Username must be at least 3 characters. }
+          </div>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+          <input
+            id="email"
+            type="email"
+            class="form-control"
+            formControlName="email"
+            placeholder="Enter your email"
+            autocomplete="email"
+            [class.is-invalid]="email?.invalid && email?.touched"
+            [class.is-valid]="email?.valid && email?.touched"
+          />
+        </div>
+        @if (email?.invalid && email?.touched) {
+          <div class="invalid-feedback d-block">
+            @if (email?.errors?.['required']) { Email is required. }
+            @if (email?.errors?.['email']) { Enter a valid email address. }
+          </div>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-lock"></i></span>
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            id="password"
+            class="form-control"
+            formControlName="password"
+            placeholder="Create a password"
+            autocomplete="new-password"
+            [class.is-invalid]="password?.invalid && password?.touched"
+            [class.is-valid]="password?.valid && password?.touched"
+          />
+          <span class="input-group-text" style="cursor: pointer;" (click)="togglePasswordVisibility()">
+            <i class="bi" [class.bi-eye]="!showPassword()" [class.bi-eye-slash]="showPassword()"></i>
+          </span>
+        </div>
+        @if (password?.invalid && password?.touched) {
+          <div class="invalid-feedback d-block">
+            @if (password?.errors?.['required']) { Password is required. }
+            @if (password?.errors?.['minlength']) { Password must be at least 8 characters. }
+          </div>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label for="confirmPassword" class="form-label">Confirm Password</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-lock"></i></span>
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            id="confirmPassword"
+            class="form-control"
+            formControlName="confirmPassword"
+            placeholder="Re-enter your password"
+            autocomplete="new-password"
+            [class.is-invalid]="confirmPassword?.touched && signupForm.errors?.['passwordsMismatch']"
+          />
+        </div>
+        @if (confirmPassword?.touched && signupForm.errors?.['passwordsMismatch']) {
+          <div class="invalid-feedback d-block">Passwords don't match.</div>
+        }
+      </div>
+
+      @if (errorMessage()) {
+        <div class="auth-alert auth-alert-error">{{ errorMessage() }}</div>
+      }
+      @if (successMessage()) {
+        <div class="auth-alert auth-alert-success">{{ successMessage() }}</div>
+      }
+
+      <button type="submit" class="btn btn-primary w-100 mt-2" [disabled]="isSubmitting()">
+        @if (!isSubmitting()) { Sign Up } @else { Creating account... }
+      </button>
+
+      <p class="text-center mt-3 mb-0">
+        Already have an account? <a routerLink="/login">Sign in</a>
+      </p>
+    </form>
+  </div>
+</div>
