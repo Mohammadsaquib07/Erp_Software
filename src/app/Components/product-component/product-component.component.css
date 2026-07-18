@@ -510,8 +510,8 @@
 .manageproduct-drawer {
   position: fixed;
   top: 0;
-  right: -580px;
-  width: 580px;
+  right: -700px;
+  width: 700px;
   height: 100%;
   background: #ffffff;
   box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
@@ -1149,7 +1149,12 @@
   max-width: 1200px;
   padding: 1.5rem;
   animation: modalFade .2s ease-out;
-  height: 100% !important;
+  /* Prevent modal from forcibly filling the viewport which can hide drawers.
+     Use a sensible max-height and allow internal scrolling when content is tall. */
+  max-height: 90vh;
+  height: auto;
+  overflow-y: auto;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
 
 @keyframes modalFade {
@@ -1649,4 +1654,117 @@ right: 0;
   border-radius: 20px;
   font-weight: 500;
   display: inline-block;
+}
+
+.product-variations {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.pv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.pv-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.pv-subtitle {
+  font-size: 12px;
+  color: #777;
+}
+
+.pv-add-type-btn {
+  background: #0d6efd;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pv-option-card {
+  border: 1px solid #eee;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.pv-option-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.pv-option-name {
+  flex: 1;
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.pv-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.pv-tag {
+  background: #f1f3f5;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.pv-tag button {
+  border: none;
+  background: transparent;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.pv-add-value {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.pv-input {
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.pv-actions {
+  margin: 15px 0;
+}
+
+.pv-table-wrapper {
+  overflow-x: auto;
+}
+
+.pv-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pv-table th,
+.pv-table td {
+  border: 1px solid #eee;
+  padding: 8px;
+  text-align: center;
+}
+
+.pv-empty {
+  padding: 10px;
+  color: #888;
+  font-size: 13px;
 }

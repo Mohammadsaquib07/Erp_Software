@@ -311,6 +311,119 @@
             </div>
           </div>
 
+          <!-- ================= PRODUCT VARIATIONS SECTION ================= -->
+         
+          <!-- ================= PRODUCT VARIATIONS (IMPROVED REAL WORLD) ================= -->
+<section class="product-variations">
+
+  <!-- HEADER -->
+  <div class="pv-header">
+    <div>
+      <h3 class="pv-title">Product Variations</h3>
+      <p class="pv-subtitle">
+        Add options like Color, Size, Material and generate real product variants
+      </p>
+    </div>
+
+    <button class="pv-add-type-btn" type="button" (click)="addVariationType()">
+      + Add Option Type
+    </button>
+  </div>
+
+  <!-- OPTION TYPES -->
+  <div class="pv-options">
+
+    <div class="pv-option-card" *ngFor="let vt of variationTypes; let i = index">
+
+      <div class="pv-option-header">
+        <input class="pv-option-name"
+               [(ngModel)]="vt.name"
+               placeholder="e.g. Color, Size" />
+
+        <button class="pv-remove" type="button"
+                (click)="removeVariationType(vt.id)">
+          ✕
+        </button>
+      </div>
+
+      <div class="pv-option-values">
+        <div class="pv-tags">
+          <span class="pv-tag" *ngFor="let val of vt.options">
+            {{ val }}
+            <button (click)="removeOptionFromType(vt.id, val)">×</button>
+          </span>
+        </div>
+
+        <div class="pv-add-value">
+          <input #optInput class="pv-input" placeholder="Add value (Red, Blue)" />
+          <button type="button"
+                  (click)="addOptionValue(vt.id, optInput.value); optInput.value=''">
+            Add
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- GENERATE BUTTON -->
+  <div class="pv-actions">
+    <button class="btn btn-primary" type="button" (click)="generateVariationRows()">
+      Generate Variants
+    </button>
+  </div>
+
+  <!-- VARIANTS TABLE -->
+  <div class="pv-table-wrapper" *ngIf="variationRows?.length">
+
+    <table class="pv-table">
+
+      <thead>
+        <tr>
+          <th *ngFor="let vt of variationTypes">{{ vt.name }}</th>
+          <th>SKU</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let row of variationRows">
+
+          <td *ngFor="let val of row.values">
+            {{ val }}
+          </td>
+
+          <td><input [(ngModel)]="row.sku" class="pv-input"></td>
+          <td><input type="number" [(ngModel)]="row.purchasePrice" class="pv-input"></td>
+          <td><input type="number" [(ngModel)]="row.stockQty" class="pv-input"></td>
+
+          <td>
+            <select [(ngModel)]="row.status" class="pv-input">
+              <option>Active</option>
+              <option>Inactive</option>
+            </select>
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+  <div class="pv-empty" *ngIf="!variationRows?.length">
+    No variants generated yet. Add options and click "Generate Variants".
+  </div>
+
+</section>
+
+
+
           <button class="btn-add-product" type="button" [disabled]="createItemForm.invalid"
             (click)="addProduct()">
             <i class="pi pi-plus"></i> Add Product

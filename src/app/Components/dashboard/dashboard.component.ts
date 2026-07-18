@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, AfterViewInit,HostListener, OnInit, OnDestroy } from '@angular/core';
 import { ProductComponent } from '../product-component/product-component';
+import { PurchaseScreenComponent } from '../purchase-screen/purchase-screen.component';
 import { AuthService } from '../../Services/auth.service';
 import { SpinnerComponent } from '../spinner/spinner.component';
 import { LoadingServiceService } from '../../Services/loading-service.service';
@@ -9,7 +10,7 @@ import { LoadingServiceService } from '../../Services/loading-service.service';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule,ProductComponent,SpinnerComponent],
+  imports: [CommonModule, ProductComponent, PurchaseScreenComponent, SpinnerComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })

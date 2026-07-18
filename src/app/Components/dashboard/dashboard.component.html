@@ -21,8 +21,6 @@
     <header class="topbar">
       <h1>Dashboard</h1>
       <div class="user-info dropdown">
-        <!-- <span>Hey Mohammad</span> -->
-        <!-- <app-child [name]="username"></app-child> -->
         <i class="pi pi-user" style="cursor: pointer;" data-bs-toggle="dropdown"></i>
         <ul class="dropdown-menu">
           <li><a class="dropdown-item" (click)="logOut()">Logout</a></li>
@@ -311,6 +309,8 @@
 
       <!-- SALES PAGE -->
       <app-product-component *ngIf="activePage === 'Sales'" [pageMode]="'sales'"></app-product-component>
+      <!-- PURCHASE PAGE -->
+      <app-purchase-screen *ngIf="activePage === 'Purchase'"></app-purchase-screen>
       <!-- INVENTORY PAGE -->
       <app-product-component *ngIf="activePage === 'Inventory'" [pageMode]="'inventory'"></app-product-component>
     </div>

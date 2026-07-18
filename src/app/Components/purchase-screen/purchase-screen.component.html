@@ -1,0 +1,456 @@
+```html
+<section class="purchase-screen">
+
+  <!-- KPI Cards -->
+  <div class="summary-cards">
+    <article
+      *ngFor="let card of kpiCards"
+      class="summary-card"
+      [ngClass]="card.accent">
+
+      <div class="card-top">
+        <div class="card-icon">
+          <i [class]="card.icon"></i>
+        </div>
+
+        <div>
+          <div class="card-title">{{ card.title }}</div>
+          <div class="card-value">{{ card.value }}</div>
+        </div>
+      </div>
+
+    </article>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-buttons">
+    <button
+      class="tab-btn"
+      [class.active]="currentTab === 'purchase'"
+      (click)="switchTab('purchase')">
+      Purchase
+    </button>
+
+    <button
+      class="tab-btn"
+      [class.active]="currentTab === 'suppliers'"
+      (click)="switchTab('suppliers')">
+      Suppliers
+    </button>
+  </div>
+
+  <!-- Search + Actions -->
+  <div class="action-bar">
+
+    <div class="search-box">
+      <i class="pi pi-search"></i>
+
+      <input
+        type="text"
+        class="professional-input"
+        [(ngModel)]="searchText"
+        [placeholder]="searchPlaceholder">
+    </div>
+
+    <button
+      class="primary-button"
+      (click)="onActionClick()">
+
+      <i class="pi pi-plus"></i>
+      {{ actionButtonLabel }}
+    </button>
+
+  </div>
+
+  <!-- Main Card -->
+  <div class="table-panel">
+
+    <!-- Purchase Section -->
+    <section *ngIf="currentTab === 'purchase'">
+
+      <div class="table-header">
+        <h3>Recent Purchase Invoices</h3>
+
+        <!-- <button
+          class="primary-button"
+          (click)="openNewPurchaseModal()">
+
+          <i class="pi pi-plus"></i>
+          New Purchase
+        </button> -->
+      </div>
+
+      <div class="table-responsive">
+
+        <table class="orders-table">
+
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Invoice No</th>
+              <th>Supplier</th>
+              <th>Total Amount</th>
+              <th>Status</th>
+              <th class="actions-column">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr *ngFor="let invoice of filteredInvoices">
+
+              <td>{{ invoice.date }}</td>
+
+              <td>{{ invoice.invoiceNo }}</td>
+
+              <td>{{ invoice.supplier }}</td>
+
+              <td>
+                ₹ {{ invoice.totalAmount | number:'1.0-0' }}
+              </td>
+
+              <td>
+                <span
+                  class="status-badge"
+                  [ngClass]="getStatusClass(invoice.status)">
+
+                  {{ invoice.status }}
+                </span>
+              </td>
+
+              <td class="actions-column">
+
+                <button
+                  class="action-button view"
+                  (click)="viewInvoice(invoice.invoiceNo)">
+
+                  <i class="pi pi-eye"></i>
+                </button>
+
+                <button
+                  class="action-button delete"
+                  (click)="deleteInvoice(invoice.invoiceNo)">
+
+                  <i class="pi pi-trash"></i>
+                </button>
+
+              </td>
+
+            </tr>
+
+            <tr *ngIf="filteredInvoices.length === 0">
+              <td colspan="6" class="empty-row">
+                No purchase records found.
+              </td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+    <!-- Supplier Section -->
+    <section *ngIf="currentTab === 'suppliers'">
+
+      <div class="table-header">
+
+        <h3>Suppliers</h3>
+
+        <!-- <button
+          class="primary-button"
+          (click)="openNewSupplierModal()">
+
+          <i class="pi pi-plus"></i>
+          Create Supplier
+        </button> -->
+
+      </div>
+
+      <div class="table-responsive">
+
+        <table class="suppliers-table">
+
+          <thead>
+            <tr>
+              <th>Supplier Name</th>
+              <th>Phone</th>
+              <th>GST Number</th>
+              <th>Payment Mode</th>
+              <th class="actions-column">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr *ngFor="let supplier of filteredSuppliers">
+
+              <td>{{ supplier.name }}</td>
+
+              <td>{{ supplier.phone }}</td>
+
+              <td>{{ supplier.gst }}</td>
+
+              <td>{{ supplier.paymentMode }}</td>
+
+              <td class="actions-column">
+
+                <button
+                  class="action-button delete"
+                  (click)="removeSupplier(supplier.id)">
+
+                  <i class="pi pi-trash"></i>
+                </button>
+
+              </td>
+
+            </tr>
+
+            <tr *ngIf="filteredSuppliers.length === 0">
+              <td colspan="5" class="empty-row">
+                No suppliers found.
+              </td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+  </div>
+
+</section>
+
+<!-- ============================= -->
+<!-- NEW PURCHASE MODAL -->
+<!-- ============================= -->
+
+<div
+  class="edit-modal-backdrop"
+  *ngIf="showNewPurchaseModal"
+  (click)="closeNewPurchaseModal()">
+</div>
+
+<div
+  class="edit-modal-wrapper"
+  *ngIf="showNewPurchaseModal">
+
+  <div class="edit-modal-content">
+
+    <div class="edit-modal-header">
+      <h2>New Purchase Entry</h2>
+
+      <button
+        class="edit-modal-close"
+        (click)="closeNewPurchaseModal()">
+
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+
+    <div class="edit-modal-body">
+
+      <div class="edit-form-grid">
+
+        <div class="form-field">
+          <label>Supplier *</label>
+
+          <select
+            [(ngModel)]="newPurchase.supplier"
+            (ngModelChange)="onSupplierSelect($event)"
+            class="professional-input">
+
+            <option value="">Select Supplier</option>
+
+            <option
+              *ngFor="let s of suppliers"
+              [value]="s.id">
+
+              {{ s.name }}
+            </option>
+
+            <option value="__create__">
+              + Create Supplier
+            </option>
+
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label>Invoice Number *</label>
+
+          <input
+            type="text"
+            [(ngModel)]="newPurchase.invoiceNo"
+            class="professional-input">
+        </div>
+
+        <div class="form-field">
+          <label>Date *</label>
+
+          <input
+            type="date"
+            [(ngModel)]="newPurchase.date"
+            class="professional-input">
+        </div>
+
+        <div class="form-field">
+          <label>Total Amount *</label>
+
+          <input
+            type="number"
+            [(ngModel)]="newPurchase.totalAmount"
+            class="professional-input">
+        </div>
+
+        <div class="form-field">
+          <label>Status</label>
+
+          <select
+            [(ngModel)]="newPurchase.status"
+            class="professional-input">
+
+            <option value="Paid">Paid</option>
+            <option value="Pending">Pending</option>
+            <option value="Unpaid">Unpaid</option>
+
+          </select>
+        </div>
+
+      </div>
+
+      <div class="edit-modal-actions">
+
+        <button
+          class="btn-edit-cancel"
+          (click)="closeNewPurchaseModal()">
+
+          Cancel
+        </button>
+
+        <button
+          class="btn-edit-save"
+          (click)="saveNewPurchase()">
+
+          Save Purchase
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ============================= -->
+<!-- SUPPLIER MODAL -->
+<!-- ============================= -->
+
+<div
+  class="edit-modal-backdrop"
+  *ngIf="showNewSupplierModal"
+  (click)="closeNewSupplierModal()">
+</div>
+
+<div
+  class="edit-modal-wrapper"
+  *ngIf="showNewSupplierModal">
+
+  <div class="edit-modal-content">
+
+    <div class="edit-modal-header">
+
+      <h2>Create Supplier</h2>
+
+      <button
+        class="edit-modal-close"
+        (click)="closeNewSupplierModal()">
+
+        <i class="pi pi-times"></i>
+      </button>
+
+    </div>
+
+    <div class="edit-modal-body">
+
+      <div class="edit-form-grid">
+
+        <div class="form-field">
+          <label>Supplier Name *</label>
+
+          <input
+            [(ngModel)]="newSupplier.name"
+            class="professional-input">
+        </div>
+
+        <div class="form-field">
+          <label>Phone *</label>
+
+          <input
+            [(ngModel)]="newSupplier.phone"
+            class="professional-input">
+        </div>
+
+        <div class="form-field">
+          <label>GST Number</label>
+
+          <input
+            [(ngModel)]="newSupplier.gst"
+            class="professional-input">
+        </div>
+
+        <div class="form-field">
+          <label>Payment Mode</label>
+
+          <select
+            [(ngModel)]="newSupplier.paymentMode"
+            class="professional-input">
+
+            <option value="Cash">Cash</option>
+            <option value="Credit">Credit</option>
+            <option value="Bank Transfer">Bank Transfer</option>
+
+          </select>
+        </div>
+
+        <div class="form-field full-width">
+
+          <label>Address</label>
+
+          <input
+            [(ngModel)]="newSupplier.address"
+            class="professional-input">
+
+        </div>
+
+      </div>
+
+      <div class="edit-modal-actions">
+
+        <button
+          class="btn-edit-cancel"
+          (click)="closeNewSupplierModal()">
+
+          Cancel
+        </button>
+
+        <button
+          class="btn-edit-save"
+          (click)="addSupplier()">
+
+          Save Supplier
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

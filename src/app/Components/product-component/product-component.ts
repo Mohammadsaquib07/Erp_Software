@@ -1,5 +1,6 @@
-import { CommonModule, JsonPipe } from '@angular/common';
-import { Component, inject, Input, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, inject, Input, OnInit, Output, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import {
   AbstractControl,
@@ -9,7 +10,7 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ItemService, Product } from '../../Services/item.service';
 import { CreateInvoiceRequest, DetailedInvoiceResponse, FullInvoiceRequest, InvoiceItem, InvoiceProduct, } from '../../../Types/Invoice';
 import { DashboardService } from '../../Services/dashboard.service';
@@ -23,7 +24,7 @@ import { PrintReportComponent } from '../print-report/print-report.component';
 @Component({
   selector: 'app-product-component',
   standalone: true,
-  imports: [CommonModule, RouterModule, RouterOutlet, ReactiveFormsModule, InputTextModule, JsonPipe, PrintReportComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, FormsModule, InputTextModule, PrintReportComponent],
   templateUrl: './product-component.component.html',
   styleUrls: ['./product-component.component.css']
 })
@@ -91,6 +92,8 @@ export class ProductComponent implements OnInit {
   closeEditModal() {
     this.showEditModal = false;
   }
+  @Input() productListData: any[] = [];   
+  @Output() close = new EventEmitter<void>();
   openModal() {
     this.showModal = true;
   }
@@ -111,9 +114,7 @@ export class ProductComponent implements OnInit {
       isNewCustomer: [true],
       customer: this.fb.group({
         Name: [''],
-        Email: [''],
-        Phone: [''],
-        BillingAddress: ['']
+        Email: ['']
       }),
       invoice: this.fb.group({
         notes: [''],
@@ -122,6 +123,129 @@ export class ProductComponent implements OnInit {
       })
     });
   }
+
+  /* Variations feature state and types */
+
+  variationTypes: Array<{
+  id: string;
+  name: string;
+  options: string[];
+}> = [];
+
+  variationRows: Array<{
+  values: string[];
+  sku: string;
+  barcode?: string;
+  purchasePrice?: number;
+  sellingPrice?: number;
+  stockQty?: number;
+  weight?: string;
+  image?: string;
+  status: 'Active' | 'Inactive';
+}> = [];
+
+  // Helpers
+  addVariationType(name: string = ''): void {
+  const id =
+    'vt-' + Date.now().toString(36) + '-' + this.variationTypes.length;
+
+  this.variationTypes.push({
+    id,
+    name: name || 'Option',
+    options: []
+  });
+
+  this.generateVariationRows();
+}
+
+  removeVariationType(id: string): void {
+  this.variationTypes = this.variationTypes.filter(v => v.id !== id);
+  this.generateVariationRows();
+}
+
+  addOptionToType(typeId: string, value: string): void {
+  const type = this.variationTypes.find(v => v.id === typeId);
+  if (!type) return;
+
+  const val = value?.trim();
+  if (!val) return;
+
+  if (!type.options.includes(val)) {
+    type.options.push(val);
+  }
+
+  this.generateVariationRows();
+}
+
+  // Template-friendly wrapper used by the HTML (keeps naming intuitive)
+  addOptionValue(typeId: string, value: string): void {
+    this.addOptionToType(typeId, value);
+  }
+
+  removeOptionFromType(typeId: string, optionValue: string): void {
+  const type = this.variationTypes.find(v => v.id === typeId);
+  if (!type) return;
+
+  type.options = type.options.filter(o => o !== optionValue);
+
+  this.generateVariationRows();
+}
+
+  generateVariationRows(): void {
+  if (!this.variationTypes.length) {
+    this.variationRows = [];
+    return;
+  }
+
+  const optionLists = this.variationTypes.map(v =>
+    v.options.length ? v.options : ['']
+  );
+
+  const combos: string[][] = optionLists.reduce(
+    (acc: string[][], curr: string[]) => {
+      const res: string[][] = [];
+
+      acc.forEach(a => {
+        curr.forEach(c => res.push([...a, c]));
+      });
+
+      return res;
+    },
+    [[]]
+  );
+
+  this.variationRows = combos.map((comb, idx) => {
+    const existing = this.variationRows[idx];
+
+    return {
+      values: comb,
+      sku:
+        existing?.sku ||
+        `SKU-${Date.now().toString(36).toUpperCase()}-${idx}`,
+      barcode: existing?.barcode || '',
+      purchasePrice: existing?.purchasePrice || 0,
+      sellingPrice: existing?.sellingPrice || 0,
+      stockQty: existing?.stockQty || 0,
+      weight: existing?.weight || '',
+      image: existing?.image || '',
+      status: existing?.status || 'Active'
+    };
+  });
+}
+
+/* Bulk update */
+bulkUpdate(
+  field: 'purchasePrice' | 'sellingPrice' | 'stockQty',
+  value: number
+): void {
+  this.variationRows = this.variationRows.map(r => ({
+    ...r,
+    [field]: value
+  }));
+}
+
+  
+
   loadItem() {
     this.itemservice.getAllItems().subscribe({
       next: (res) => {
@@ -317,39 +441,137 @@ private initForms(): void {
   get total(): number {
     return this.subtotal + this.tax;
   }
-  saveInvoice() {
-  if (this.form.invalid) {
-    this.form.markAllAsTouched();
-    return;
-  }
-  const formValue = this.form.getRawValue();
-  const payload: CreateInvoiceRequest = {
-    IsNewCustomer: formValue.isNewCustomer,
-    CustomerId: !formValue.isNewCustomer ? formValue.customer.customerId : null,
-    Customer: formValue.isNewCustomer ? {
-      Name: formValue.customer.Name,
-      Email: formValue.customer.Email,
-      Phone: formValue.customer.Phone,
-      BillingAddress: formValue.customer.BillingAddress
-    } : null,
+  saveInvoice(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      this.errorMessage = 'Please fill all required invoice fields before saving.';
+      setTimeout(() => (this.errorMessage = ''), 3000);
+      return;
+    }
 
-    InvoiceDate: new Date().toISOString(),
+    const formValue = this.form.getRawValue();
 
-    Notes: formValue.invoice.notes,
+    // Validate items
+    const items = (formValue.invoice?.items || [])
+      .filter((item: any) => item?.productId != null && item?.productId !== '' && Number(item.qty) > 0)
+      .map((item: any) => ({
+        ProductId: Number(item.productId),
+        Quantity: Number(item.qty)
+      }));
 
-    Items: formValue.invoice.items.map((item: any) => ({
-      ProductId: item.productId,
-      Quantity: item.qty
-    }))
-  };
-  this.SaveService.saveInvoice(payload).subscribe({
-    next: (res) => {
-      console.log('Invoice Created Successfully', res);
-      // 'res' is the JSON response with the invoiceId we discussed earlier
-      this.invoiceResponseData = res; 
-    },
-    error: (err) => console.error('Backend Error:', err)
-  });
+    if (items.length === 0) {
+      this.errorMessage = 'Please add at least one product line item before saving.';
+      setTimeout(() => (this.errorMessage = ''), 3000);
+      return;
+    }
+
+    // Validate customer data
+    const isNewCustomer = Boolean(formValue.isNewCustomer);
+    if (isNewCustomer) {
+      const customer = formValue.customer;
+      if (!customer?.Name || !customer.Name.trim()) {
+        this.errorMessage = 'Customer name is required.';
+        setTimeout(() => (this.errorMessage = ''), 3000);
+        return;
+      }
+      if (!customer?.Email || !customer.Email.trim()) {
+        this.errorMessage = 'Customer email is required.';
+        setTimeout(() => (this.errorMessage = ''), 3000);
+        return;
+      }
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(customer.Email)) {
+        this.errorMessage = 'Please enter a valid email address.';
+        setTimeout(() => (this.errorMessage = ''), 3000);
+        return;
+      }
+    } else {
+      // Validate existing customer selection
+      if (!formValue.customer?.customerId || formValue.customer.customerId <= 0) {
+        this.errorMessage = 'Please select a valid customer.';
+        setTimeout(() => (this.errorMessage = ''), 3000);
+        return;
+      }
+    }
+
+    const customerPayload = isNewCustomer
+      ? {
+          Name: formValue.customer.Name.trim(),
+          Email: formValue.customer.Email?.trim() || null
+        }
+      : null;
+
+    const payload: CreateInvoiceRequest = {
+      IsNewCustomer: isNewCustomer,
+      CustomerId: !isNewCustomer ? formValue.customer?.customerId ?? null : null,
+      Customer: customerPayload,
+      InvoiceDate: new Date().toISOString(),
+      Notes: formValue.invoice?.notes || null,
+      Items: items
+    };
+
+    this.SaveService.saveInvoice(payload).subscribe({
+      next: (res) => {
+        console.log('Invoice Created Successfully', res);
+        
+        // Handle both new and updated response format
+        if (res.Success && res.Data) {
+          this.invoiceResponseData = res.Data;
+          this.successMessage = 'Invoice saved successfully!';
+          
+          // Reset form after successful save
+          this.form.reset({
+            isNewCustomer: true,
+            customer: {
+              Name: '',
+              Email: ''
+            },
+            invoice: {
+              notes: '',
+              createdBy: 'Admin',
+              items: [this.createItem()]
+            }
+          });
+          
+          setTimeout(() => {
+            this.successMessage = '';
+            this.closeInvoice();
+          }, 2000);
+        } else if (res.InvoiceId) {
+          // Fallback for old response format
+          this.invoiceResponseData = res;
+          this.successMessage = 'Invoice saved successfully!';
+          setTimeout(() => (this.successMessage = ''), 3000);
+        } else {
+          // Unexpected response format
+          console.warn('Unexpected response format:', res);
+          this.errorMessage = 'Invoice saved but response format unexpected.';
+          setTimeout(() => (this.errorMessage = ''), 3000);
+        }
+      },
+      error: (err) => {
+        console.error('Backend Error Details:', err);
+        console.error('Error response:', err.error);
+        
+        // Extract error message from backend response
+        let errorMsg = 'Unable to save invoice. Please try again.';
+        
+        // Check for consistent error response format
+        if (err.error?.Message) {
+          errorMsg = err.error.Message;
+        } else if (err.error?.message) {
+          errorMsg = err.error.message;
+        } else if (err.statusText) {
+          errorMsg = 'Error: ' + err.statusText;
+        } else if (err.message) {
+          errorMsg = err.message;
+        }
+        
+        this.errorMessage = errorMsg;
+        setTimeout(() => (this.errorMessage = ''), 5000);
+      }
+    });
   }
    private getProductName(productId: number): string {
   const product = this.productList.find(p => p.id === productId);
