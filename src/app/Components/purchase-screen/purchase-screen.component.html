@@ -1,4 +1,3 @@
-```html
 <section class="purchase-screen">
 
   <!-- KPI Cards -->
@@ -39,7 +38,6 @@
     </button>
   </div>
 
-  <!-- Search + Actions -->
   <div class="action-bar">
 
     <div class="search-box">
@@ -59,120 +57,61 @@
       <i class="pi pi-plus"></i>
       {{ actionButtonLabel }}
     </button>
-
   </div>
-
-  <!-- Main Card -->
   <div class="table-panel">
-
-    <!-- Purchase Section -->
     <section *ngIf="currentTab === 'purchase'">
-
       <div class="table-header">
         <h3>Recent Purchase Invoices</h3>
-
-        <!-- <button
-          class="primary-button"
-          (click)="openNewPurchaseModal()">
-
-          <i class="pi pi-plus"></i>
-          New Purchase
-        </button> -->
       </div>
-
       <div class="table-responsive">
-
         <table class="orders-table">
-
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Invoice No</th>
-              <th>Supplier</th>
-              <th>Total Amount</th>
-              <th>Status</th>
-              <th class="actions-column">Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-
-            <tr *ngFor="let invoice of filteredInvoices">
-
-              <td>{{ invoice.date }}</td>
-
-              <td>{{ invoice.invoiceNo }}</td>
-
-              <td>{{ invoice.supplier }}</td>
-
-              <td>
-                ₹ {{ invoice.totalAmount | number:'1.0-0' }}
-              </td>
-
-              <td>
-                <span
-                  class="status-badge"
-                  [ngClass]="getStatusClass(invoice.status)">
-
-                  {{ invoice.status }}
-                </span>
-              </td>
-
-              <td class="actions-column">
-
-                <button
-                  class="action-button view"
-                  (click)="viewInvoice(invoice.invoiceNo)">
-
-                  <i class="pi pi-eye"></i>
-                </button>
-
-                <button
-                  class="action-button delete"
-                  (click)="deleteInvoice(invoice.invoiceNo)">
-
-                  <i class="pi pi-trash"></i>
-                </button>
-
-              </td>
-
-            </tr>
-
-            <tr *ngIf="filteredInvoices.length === 0">
-              <td colspan="6" class="empty-row">
-                No purchase records found.
-              </td>
-            </tr>
-
-          </tbody>
-
-        </table>
-
+  <!-- {{purchaseInvoices.invoiceDate}}  ❌ ye line hata do -->
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Invoice No</th>
+      <th>Supplier</th>
+      <th>Total Amount</th>
+      <th>Status</th>
+      <th class="actions-column">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let invoice of filteredInvoices">
+      <td>{{ invoice.invoiceDate | date:'yyyy-MM-dd' }}</td>
+      <td>{{ invoice.invoiceNumber }}</td>
+      <td>{{ invoice.supplierName }}</td>
+      <td>₹ {{ invoice.totalAmount | number:'1.0-0' }}</td>
+      <td>
+        <span class="status-badge" [ngClass]="getStatusClass(invoice.status)">
+          {{ invoice.status }}
+        </span>
+      </td>
+      <td class="actions-column">
+        <button class="action-button view" (click)="viewInvoice(invoice.invoiceNumber)">
+          <i class="pi pi-eye"></i>
+        </button>
+        <button class="action-button delete" (click)="deleteInvoice(invoice.invoiceNumber)">
+          <i class="pi pi-trash"></i>
+        </button>
+      </td>
+    </tr>
+    <tr *ngIf="filteredInvoices.length === 0">
+      <td colspan="6" class="empty-row">
+        No purchase records found.
+      </td>
+    </tr>
+  </tbody>
+</table>
       </div>
-
     </section>
-
-    <!-- Supplier Section -->
     <section *ngIf="currentTab === 'suppliers'">
-
       <div class="table-header">
-
         <h3>Suppliers</h3>
-
-        <!-- <button
-          class="primary-button"
-          (click)="openNewSupplierModal()">
-
-          <i class="pi pi-plus"></i>
-          Create Supplier
-        </button> -->
-
       </div>
 
       <div class="table-responsive">
-
         <table class="suppliers-table">
-
           <thead>
             <tr>
               <th>Supplier Name</th>
@@ -182,16 +121,14 @@
               <th class="actions-column">Actions</th>
             </tr>
           </thead>
-
           <tbody>
-
             <tr *ngFor="let supplier of filteredSuppliers">
 
               <td>{{ supplier.name }}</td>
 
               <td>{{ supplier.phone }}</td>
 
-              <td>{{ supplier.gst }}</td>
+              <td>{{ supplier.gstNumber }}</td>
 
               <td>{{ supplier.paymentMode }}</td>
 
@@ -401,7 +338,7 @@
           <label>GST Number</label>
 
           <input
-            [(ngModel)]="newSupplier.gst"
+            [(ngModel)]="newSupplier.gstNumber"
             class="professional-input">
         </div>
 

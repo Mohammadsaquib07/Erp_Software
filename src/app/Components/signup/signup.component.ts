@@ -4,8 +4,6 @@ import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, Validati
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../Services/auth.service';
 
-// Confirm-password must match Password — kept as a plain function, not a class,
-// since this form only needs the one cross-field check.
 function passwordsMatch(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value;
   const confirmPassword = control.get('confirmPassword')?.value;

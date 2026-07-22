@@ -11,7 +11,7 @@ export const routes: Routes = [
 
     {
         canActivate:[notAuthGuard],
-        path: '',
+        path: 'login',
         loadComponent: () => import('./Components/login/login.component').then(m => m.LoginComponent)
     },
     {
