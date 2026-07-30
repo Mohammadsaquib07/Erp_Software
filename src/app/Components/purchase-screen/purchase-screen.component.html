@@ -65,7 +65,6 @@
       </div>
       <div class="table-responsive">
         <table class="orders-table">
-  <!-- {{purchaseInvoices.invoiceDate}}  ❌ ye line hata do -->
   <thead>
     <tr>
       <th>Date</th>
@@ -164,6 +163,15 @@
 </section>
 
 <!-- ============================= -->
+<!-- SUCCESS TOAST -->
+<!-- ============================= -->
+
+<div class="toast-success" *ngIf="showSuccessToast">
+  <i class="pi pi-check-circle"></i>
+  Purchase saved successfully
+</div>
+
+<!-- ============================= -->
 <!-- NEW PURCHASE MODAL -->
 <!-- ============================= -->
 
@@ -177,7 +185,7 @@
   class="edit-modal-wrapper"
   *ngIf="showNewPurchaseModal">
 
-  <div class="edit-modal-content">
+  <div class="edit-modal-content edit-modal-wide">
 
     <div class="edit-modal-header">
       <h2>New Purchase Entry</h2>
@@ -192,6 +200,7 @@
 
     <div class="edit-modal-body">
 
+      <!-- ============ TOP INVOICE INFO ============ -->
       <div class="edit-form-grid">
 
         <div class="form-field">
@@ -200,7 +209,8 @@
           <select
             [(ngModel)]="newPurchase.supplier"
             (ngModelChange)="onSupplierSelect($event)"
-            class="professional-input">
+            class="professional-input"
+            [class.input-error]="formSubmitted && !newPurchase.supplier">
 
             <option value="">Select Supplier</option>
 
@@ -216,6 +226,10 @@
             </option>
 
           </select>
+
+          <span class="error-text" *ngIf="formSubmitted && !newPurchase.supplier">
+            Supplier is required
+          </span>
         </div>
 
         <div class="form-field">
@@ -224,24 +238,38 @@
           <input
             type="text"
             [(ngModel)]="newPurchase.invoiceNo"
-            class="professional-input">
+            (ngModelChange)="checkDuplicateInvoice()"
+            class="professional-input"
+            [class.input-error]="isDuplicateInvoice || (formSubmitted && !newPurchase.invoiceNo)">
+
+          <span class="error-text" *ngIf="isDuplicateInvoice">
+            ⚠ Invoice number already exists for this supplier
+          </span>
+          <span class="error-text" *ngIf="formSubmitted && !newPurchase.invoiceNo && !isDuplicateInvoice">
+            Invoice number is required
+          </span>
         </div>
 
         <div class="form-field">
-          <label>Date *</label>
+          <label>Invoice Date *</label>
 
           <input
             type="date"
             [(ngModel)]="newPurchase.date"
-            class="professional-input">
+            class="professional-input"
+            [class.input-error]="formSubmitted && !newPurchase.date">
+
+          <span class="error-text" *ngIf="formSubmitted && !newPurchase.date">
+            Date is required
+          </span>
         </div>
 
         <div class="form-field">
-          <label>Total Amount *</label>
+          <label>Due Date</label>
 
           <input
-            type="number"
-            [(ngModel)]="newPurchase.totalAmount"
+            type="date"
+            [(ngModel)]="newPurchase.dueDate"
             class="professional-input">
         </div>
 
@@ -261,10 +289,102 @@
 
       </div>
 
+      <!-- ============ LINE ITEMS SECTION ============ -->
+      <div class="line-items-section">
+
+        <div class="line-items-header">
+          <h3>Items</h3>
+          <span class="error-text" *ngIf="formSubmitted && lineItemsInvalid">
+            Add at least one valid item (product, quantity, price)
+          </span>
+        </div>
+
+        <div class="line-items-table-wrapper">
+          <table class="line-items-table">
+            <thead>
+              <tr>
+                <th class="col-product">Product</th>
+                <th class="col-qty">Qty</th>
+                <th class="col-price">Unit Price (₹)</th>
+                <th class="col-amount">Amount (₹)</th>
+                <th class="col-remove"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of newPurchase.items; let i = index">
+                <td class="col-product">
+                  <select
+                    [(ngModel)]="item.productId"
+                    [ngModelOptions]="{standalone: true}"
+                    (ngModelChange)="onProductSelect(i)"
+                    class="professional-input line-input"
+                    [class.input-error]="formSubmitted && !item.productId">
+
+                    <option [value]="0">Select Product</option>
+                    <option *ngFor="let p of products" [value]="p.id">
+                      {{ p.name }}
+                    </option>
+                  </select>
+                </td>
+
+                <td class="col-qty">
+                  <input
+                    type="number"
+                    min="1"
+                    [(ngModel)]="item.quantity"
+                    [ngModelOptions]="{standalone: true}"
+                    (ngModelChange)="recalculateTotal()"
+                    class="professional-input line-input"
+                    [class.input-error]="formSubmitted && item.quantity <= 0">
+                </td>
+
+                <td class="col-price">
+                  <input
+                    type="number"
+                    min="0"
+                    [(ngModel)]="item.unitPrice"
+                    [ngModelOptions]="{standalone: true}"
+                    (ngModelChange)="recalculateTotal()"
+                    class="professional-input line-input"
+                    [class.input-error]="formSubmitted && item.unitPrice <= 0">
+                </td>
+
+                <td class="col-amount">
+                  <span class="line-amount">
+                    ₹ {{ (item.quantity * item.unitPrice) | number:'1.0-0' }}
+                  </span>
+                </td>
+
+                <td class="col-remove">
+                  <button
+                    type="button"
+                    class="row-remove-btn"
+                    [disabled]="newPurchase.items.length === 1"
+                    (click)="removeItemRow(i)">
+                    <i class="pi pi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <button type="button" class="add-item-btn" (click)="addItemRow()">
+          <i class="pi pi-plus"></i> Add Item
+        </button>
+
+        <div class="total-summary-row">
+          <span>Total Amount</span>
+          <span class="total-summary-value">₹ {{ newPurchase.totalAmount | number:'1.0-0' }}</span>
+        </div>
+
+      </div>
+
       <div class="edit-modal-actions">
 
         <button
           class="btn-edit-cancel"
+          [disabled]="isSaving"
           (click)="closeNewPurchaseModal()">
 
           Cancel
@@ -272,9 +392,11 @@
 
         <button
           class="btn-edit-save"
+          [disabled]="isSaving"
           (click)="saveNewPurchase()">
 
-          Save Purchase
+          <i class="pi pi-spin pi-spinner" *ngIf="isSaving"></i>
+          {{ isSaving ? 'Saving...' : 'Save Purchase' }}
         </button>
 
       </div>

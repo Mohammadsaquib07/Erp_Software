@@ -4,12 +4,16 @@ import { FormsModule } from '@angular/forms';
 import { SupplierServiceService } from '../../Services/supplier-service.service';
 import { PurchaseServiceService } from '../../Services/PurchaseService/purchase-service.service';
 import { PurchaseInvoiceApi } from '../../Model/Purchase_Model';
+import { ItemService } from '../../Services/item.service';
+// ⚠️ Ye import path apne actual Product/Item service ke hisaab se update karo
+// (jo GetItem API call karti hai)
 
 interface PurchaseInvoice {
   id?: number;
   invoiceDate: string;
   invoiceNumber: string;
   supplierName: string;
+  supplierId: string;
   totalAmount: number;
   status: 'Paid' | 'Pending' | 'Unpaid';
 }
@@ -29,14 +33,22 @@ export interface Supplier {
   phone?: string;
   paymentMode?: string;
 }
-interface PurchaseInvoice {
-  id?: number;
-  invoiceDate: string;
-  invoiceNumber: string;
-  supplierName: string;
-  totalAmount: number;
-  status: 'Paid' | 'Pending' | 'Unpaid';
+
+// ✅ Product master (Items table se aayega — id, name, price, stock)
+export interface Product {
+  id: number;
+  name: string;
+  price: number;
+  stock?: number;
 }
+
+// ✅ Ek line item row ka shape — modal ke items array ke liye
+interface PurchaseLineItem {
+  productId: number;
+  quantity: number;
+  unitPrice: number;
+}
+
 @Component({
   selector: 'app-purchase-screen',
   standalone: true,
@@ -45,27 +57,33 @@ interface PurchaseInvoice {
   styleUrls: ['./purchase-screen.component.css']
 })
 export class PurchaseScreenComponent implements OnInit {
+  isDuplicateInvoice: boolean = false;
+  formSubmitted: boolean = false;
+  isSaving: boolean = false;
+  showSuccessToast: boolean = false;
   loadingInvoices = false;
   invoiceError = '';
   searchText = '';
   currentTab: 'purchase' | 'suppliers' = 'purchase';
   showNewPurchaseModal = false;
 
-  
-
   /** New purchase form model — modal ke fields yahi se bindhte hain */
   newPurchase: {
     date: string;
+    dueDate: string;
     invoiceNo: string;
     supplier: string;
     totalAmount: number;
     status: 'Paid' | 'Pending' | 'Unpaid';
+    items: PurchaseLineItem[];
   } = {
     date: new Date().toISOString().slice(0, 10),
+    dueDate: '',
     invoiceNo: '',
     supplier: '',
     totalAmount: 0,
-    status: 'Pending'
+    status: 'Pending',
+    items: [this.createEmptyLineItem()]
   };
 
   suppliers: Supplier[] = [];
@@ -79,6 +97,11 @@ export class PurchaseScreenComponent implements OnInit {
     phone: '',
     paymentMode: ''
   };
+
+  // ✅ Products master list — dropdown ke liye
+  products: Product[] = [];
+  loadingProducts = false;
+  productError = '';
 
   kpiCards: KpiCard[] = [
     {
@@ -105,12 +128,14 @@ export class PurchaseScreenComponent implements OnInit {
 
   constructor(
     private supplierService: SupplierServiceService,
-    private purchaseObj: PurchaseServiceService
+    private purchaseObj: PurchaseServiceService,
+    private productService: ItemService
   ) {}
 
   ngOnInit(): void {
     this.loadSuppliers();
     this.loadInvoices();
+    this.loadProducts();
   }
 
   get filteredInvoices(): PurchaseInvoice[] {
@@ -142,6 +167,18 @@ export class PurchaseScreenComponent implements OnInit {
     return this.currentTab === 'purchase' ? 'New Purchase' : 'Create Supplier';
   }
 
+  // ✅ Line items valid hain ya nahi — har row mein product, qty>0, price>0 hona chahiye
+  get lineItemsInvalid(): boolean {
+    return this.newPurchase.items.length === 0 ||
+      this.newPurchase.items.some(item =>
+        !item.productId || item.quantity <= 0 || item.unitPrice <= 0
+      );
+  }
+
+  // ==============================
+  // TAB / ACTION HANDLERS
+  // ==============================
+
   onActionClick() {
     if (this.currentTab === 'purchase') this.openNewPurchaseModal();
     else this.openNewSupplierModal();
@@ -161,57 +198,186 @@ export class PurchaseScreenComponent implements OnInit {
     return map[status as string] || 'badge-unpaid';
   }
 
+  // ==============================
+  // PURCHASE MODAL
+  // ==============================
+
   openNewPurchaseModal() {
     this.showNewPurchaseModal = true;
+    this.formSubmitted = false;
+    this.isDuplicateInvoice = false;
   }
 
   closeNewPurchaseModal() {
     this.showNewPurchaseModal = false;
+    this.formSubmitted = false;
+    this.isDuplicateInvoice = false;
     this.newPurchase = {
       date: new Date().toISOString().slice(0, 10),
+      dueDate: '',
       invoiceNo: '',
       supplier: '',
       totalAmount: 0,
-      status: 'Pending'
+      status: 'Pending',
+      items: [this.createEmptyLineItem()]
     };
   }
 
-  /** Backend se seedha flat shape aata hai, koi mapping ki zarurat nahi */
-  loadInvoices() {
-    this.loadingInvoices = true;
-  this.invoiceError = '';
-  this.purchaseObj.getAllInvoices().subscribe({
-    next: (data: PurchaseInvoiceApi[]) => {
-      this.purchaseInvoices = data;
-      this.loadingInvoices = false;
-    },
-    error: (err) => {
-      this.invoiceError = 'Purchase invoices load nahi hue: ' + err.message;
-      this.loadingInvoices = false;
-    }
-  });
+  private createEmptyLineItem(): PurchaseLineItem {
+    return { productId: 0, quantity: 1, unitPrice: 0 };
   }
 
+  // ✅ Naya line item row add karo
+  addItemRow() {
+    this.newPurchase.items.push(this.createEmptyLineItem());
+  }
+
+  // ✅ Row remove karo (kam se kam 1 row rehni chahiye)
+  removeItemRow(index: number) {
+    if (this.newPurchase.items.length === 1) return;
+    this.newPurchase.items.splice(index, 1);
+    this.recalculateTotal();
+  }
+
+  // ✅ Product select hote hi uska price suggestion ke taur pe unit price mein fill karo
+  onProductSelect(index: number) {
+    const item = this.newPurchase.items[index];
+    const product = this.products.find(p => p.id === +item.productId);
+    if (product) {
+      item.unitPrice = product.price;
+    }
+    this.recalculateTotal();
+  }
+
+  // ✅ Total Amount ko sab line items ke sum se auto-calculate karo
+  recalculateTotal() {
+    this.newPurchase.totalAmount = this.newPurchase.items.reduce(
+      (sum, item) => sum + (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0),
+      0
+    );
+  }
+
+  // ==============================
+  // DATA LOADING
+  // ==============================
+
+  loadInvoices() {
+    this.loadingInvoices = true;
+    this.invoiceError = '';
+    this.purchaseObj.getAllInvoices().subscribe({
+      next: (data: PurchaseInvoiceApi[]) => {
+        this.purchaseInvoices = data as unknown as PurchaseInvoice[];
+        this.loadingInvoices = false;
+      },
+      error: (err) => {
+        this.invoiceError = 'Purchase invoices load nahi hue: ' + err.message;
+        this.loadingInvoices = false;
+      }
+    });
+  }
+
+  // ✅ Products master list load karo (Product dropdown ke liye)
+  loadProducts() {
+    this.loadingProducts = true;
+    this.productError = '';
+    this.productService.getAllItems().subscribe({
+      next: (data: Product[]) => {
+        this.products = data;
+        this.loadingProducts = false;
+      },
+      error: (err) => {
+        this.productError = 'Products load nahi hue: ' + err.message;
+        this.loadingProducts = false;
+      }
+    });
+  }
+
+  // ==============================
+  // VALIDATION
+  // ==============================
+
+  checkDuplicateInvoice() {
+    if (!this.newPurchase.invoiceNo || !this.newPurchase.supplier) {
+      this.isDuplicateInvoice = false;
+      return;
+    }
+
+    this.isDuplicateInvoice = this.purchaseInvoices.some(
+      inv => inv.invoiceNumber.trim().toLowerCase() === this.newPurchase.invoiceNo.trim().toLowerCase() &&
+             String(inv.supplierId) === String(this.newPurchase.supplier)
+    );
+  }
+
+  isFormValid(): boolean {
+    return !!this.newPurchase.supplier &&
+           !!this.newPurchase.invoiceNo &&
+           !!this.newPurchase.date &&
+           !this.lineItemsInvalid &&
+           !this.isDuplicateInvoice;
+  }
+
+  // ==============================
+  // SAVE PURCHASE
+  // ==============================
+
   saveNewPurchase() {
-    if (!this.newPurchase.invoiceNo || !(this.newPurchase.totalAmount > 0)) {
-    return;
+    this.formSubmitted = true;
+    this.checkDuplicateInvoice();
+    this.recalculateTotal();
+
+    if (!this.isFormValid()) {
+      return;
+    }
+
+    const supplierIdNum = +this.newPurchase.supplier;
+    const s = this.suppliers.find(x => x.id === supplierIdNum);
+    const supplierName = s ? s.name : '';
+
+    // ✅ Backend POST API structure ke hisaab se payload banaya
+    // { supplierId, invoiceNumber, invoiceDate, dueDate, status, items: [{productId, quantity, unitPrice}] }
+    const apiPayload = {
+      supplierId: supplierIdNum,
+      invoiceNumber: this.newPurchase.invoiceNo,
+      invoiceDate: this.newPurchase.date,
+      dueDate: this.newPurchase.dueDate || null,
+      status: this.newPurchase.status,
+      items: this.newPurchase.items.map(item => ({
+        productId: +item.productId,
+        quantity: Number(item.quantity),
+        unitPrice: Number(item.unitPrice)
+      }))
+    };
+
+    this.isSaving = true;
+
+    this.purchaseObj.createInvoice(apiPayload).subscribe({
+      next: () => {
+        // Local list mein bhi turant reflect karwa do (optimistic update)
+        const newInvoice: PurchaseInvoice = {
+          invoiceDate: this.newPurchase.date,
+          invoiceNumber: this.newPurchase.invoiceNo,
+          supplierName: supplierName,
+          supplierId: this.newPurchase.supplier,
+          totalAmount: this.newPurchase.totalAmount,
+          status: this.newPurchase.status
+        };
+        this.purchaseInvoices = [newInvoice, ...this.purchaseInvoices];
+
+        this.isSaving = false;
+        this.showSuccessToast = true;
+        this.closeNewPurchaseModal();
+        setTimeout(() => (this.showSuccessToast = false), 3000);
+      },
+      error: (err) => {
+        this.isSaving = false;
+        this.invoiceError = 'Purchase save nahi hua: ' + err.message;
+      }
+    });
   }
-  let supplierName = '';
-  if (this.newPurchase.supplier) {
-    const selectedId = +this.newPurchase.supplier;
-    const s = this.suppliers.find(x => x.id === selectedId);
-    supplierName = s ? s.name : this.newPurchase.supplier;
-  }
-  const newInvoice: PurchaseInvoice = {
-    invoiceDate: this.newPurchase.date,        
-    invoiceNumber: this.newPurchase.invoiceNo, 
-    supplierName: supplierName,              
-    totalAmount: this.newPurchase.totalAmount,
-    status: this.newPurchase.status
-  };
-  this.purchaseInvoices = [newInvoice, ...this.purchaseInvoices];
-  this.closeNewPurchaseModal();
-  }
+
+  // ==============================
+  // SUPPLIERS
+  // ==============================
 
   loadSuppliers() {
     this.loadingSuppliers = true;
@@ -240,6 +406,7 @@ export class PurchaseScreenComponent implements OnInit {
       return;
     }
     this.newPurchase.supplier = value;
+    this.checkDuplicateInvoice();
   }
 
   closeNewSupplierModal() {
