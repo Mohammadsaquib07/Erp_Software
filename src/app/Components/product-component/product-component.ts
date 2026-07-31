@@ -244,13 +244,15 @@ bulkUpdate(
   }));
 }
 
-  
-
   loadItem() {
     this.itemservice.getAllItems().subscribe({
       next: (res) => {
-        this.productList = res;
-        console.log(res);
+        // normalize product list responses (API sometimes returns wrapper)
+        if (Array.isArray(res)) this.productList = res;
+        else if (Array.isArray((res as any).Data)) this.productList = (res as any).Data;
+        else if (Array.isArray((res as any).data)) this.productList = (res as any).data;
+        else this.productList = [];
+        console.log(this.productList);
       },
       error: (err) => {
         console.log(err);
@@ -301,7 +303,12 @@ bulkUpdate(
 
   // 2. Load Dashboard Statistics
   this.dashboardService.getTopCardData().subscribe({
-    next: data => this.dashboardData = data,
+    next: data => {
+      if (!data) this.dashboardData = null;
+      else if ((data as any).Data) this.dashboardData = (data as any).Data;
+      else if ((data as any).data) this.dashboardData = (data as any).data;
+      else this.dashboardData = data;
+    },
     error: (err) => {
       console.error(err);
       this.errorMessage = 'Error loading dashboard data';
@@ -311,7 +318,12 @@ bulkUpdate(
 
   // 3. Load Recent Orders
   this.recentOrderService.getRecentOrders(10).subscribe({
-    next: (data) => this.recentOrders = data,
+    next: (data) => {
+      if (Array.isArray(data)) this.recentOrders = data;
+      else if (Array.isArray((data as any).Data)) this.recentOrders = (data as any).Data;
+      else if (Array.isArray((data as any).data)) this.recentOrders = (data as any).data;
+      else this.recentOrders = [];
+    },
     error: (err) => console.error('Order load error:', err)
   });
 
@@ -321,9 +333,8 @@ bulkUpdate(
     const id = Number(idParam);
     this.getInvoiceService.getInvoiceById(id).subscribe({
       next: (res) => {
-        this.invoiceResponseData = res;
-        // Optional: If you want to pre-fill the form with this data:
-        // this.patchFormWithInvoice(res);
+        // service returns normalized data (or wrapper.Data)
+        this.invoiceResponseData = (res as any)?.Data ? (res as any).Data : res;
       },
       error: (err) => console.error('Invoice load error:', err)
     });

@@ -47,17 +47,33 @@ export class PrintReportComponent implements OnInit {
 
   loadReportData(): void {
     this.dashboardService.getTopCardData().subscribe({
-      next: (data) => this.dashboardData = data,
+      next: (data) => {
+        // normalize wrapper responses
+        if (!data) this.dashboardData = null;
+        else if ((data as any).Data) this.dashboardData = (data as any).Data;
+        else if ((data as any).data) this.dashboardData = (data as any).data;
+        else this.dashboardData = data;
+      },
       error: (err) => console.error('Error loading dashboard data:', err)
     });
 
     this.recentOrderService.getRecentOrders(20).subscribe({
-      next: (data) => this.recentOrders = data,
+      next: (data) => {
+        if (Array.isArray(data)) this.recentOrders = data;
+        else if (Array.isArray((data as any).Data)) this.recentOrders = (data as any).Data;
+        else if (Array.isArray((data as any).data)) this.recentOrders = (data as any).data;
+        else this.recentOrders = [];
+      },
       error: (err) => console.error('Error loading orders:', err)
     });
 
     this.itemService.getAllItems().subscribe({
-      next: (data) => this.productList = data,
+      next: (data) => {
+        if (Array.isArray(data)) this.productList = data;
+        else if (Array.isArray((data as any).Data)) this.productList = (data as any).Data;
+        else if (Array.isArray((data as any).data)) this.productList = (data as any).data;
+        else this.productList = [];
+      },
       error: (err) => console.error('Error loading products:', err)
     });
   }

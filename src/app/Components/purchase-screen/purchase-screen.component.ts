@@ -282,7 +282,17 @@ export class PurchaseScreenComponent implements OnInit {
     this.invoiceError = '';
     this.purchaseObj.getAllInvoices().subscribe({
       next: (data: PurchaseInvoiceApi[]) => {
-        this.purchaseInvoices = data as unknown as PurchaseInvoice[];
+        // normalize possible wrapper responses from API (e.g. { Success: true, Data: [...] })
+        const normalize = (d: any): PurchaseInvoice[] => {
+          if (Array.isArray(d)) return d as PurchaseInvoice[];
+          if (!d) return [];
+          if (Array.isArray(d.data)) return d.data as PurchaseInvoice[];
+          if (Array.isArray(d.Data)) return d.Data as PurchaseInvoice[];
+          if (Array.isArray(d.items)) return d.items as PurchaseInvoice[];
+          return [];
+        };
+
+        this.purchaseInvoices = normalize(data as any);
         this.loadingInvoices = false;
       },
       error: (err) => {
@@ -298,7 +308,17 @@ export class PurchaseScreenComponent implements OnInit {
     this.productError = '';
     this.productService.getAllItems().subscribe({
       next: (data: Product[]) => {
-        this.products = data;
+        // normalize product list responses similarly
+        const normalizeProducts = (d: any): Product[] => {
+          if (Array.isArray(d)) return d as Product[];
+          if (!d) return [];
+          if (Array.isArray(d.data)) return d.data as Product[];
+          if (Array.isArray(d.Data)) return d.Data as Product[];
+          if (Array.isArray(d.items)) return d.items as Product[];
+          return [];
+        };
+
+        this.products = normalizeProducts(data as any);
         this.loadingProducts = false;
       },
       error: (err) => {
@@ -400,7 +420,17 @@ export class PurchaseScreenComponent implements OnInit {
     this.supplierError = '';
     this.supplierService.getAllSUpplier().subscribe({
       next: (data) => {
-        this.suppliers = data;
+        // normalize supplier responses (API may return wrapper object)
+        const normalizeSuppliers = (d: any): Supplier[] => {
+          if (Array.isArray(d)) return d as Supplier[];
+          if (!d) return [];
+          if (Array.isArray(d.data)) return d.data as Supplier[];
+          if (Array.isArray(d.Data)) return d.Data as Supplier[];
+          if (Array.isArray(d.items)) return d.items as Supplier[];
+          return [];
+        };
+
+        this.suppliers = normalizeSuppliers(data as any);
         this.loadingSuppliers = false;
       },
       error: (err) => {
