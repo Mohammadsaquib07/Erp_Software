@@ -32,6 +32,9 @@ export interface Supplier {
   phone?: string;
   paymentMode?: string;
 }
+
+// ✅ Product master (Items table se aayega — id, name, price, stock)
+// imageUrl abhi optional hai — jab backend/DB mein image column add hoga tab automatically use hone lagega
 export interface Product {
   id: number;
   name: string;
@@ -39,6 +42,8 @@ export interface Product {
   stock?: number;
   imageUrl?: string;
 }
+
+// ✅ Ek line item row ka shape — modal ke items array ke liye
 interface PurchaseLineItem {
   productId: number;
   quantity: number;
@@ -86,6 +91,9 @@ export class PurchaseScreenComponent implements OnInit {
   showNewSupplierModal = false;
   loadingSuppliers = false;
   supplierError = '';
+  supplierFormSubmitted = false;
+  isDuplicateSupplierPhone = false;
+  isSavingSupplier = false;
   newSupplier: Partial<Supplier> = {
     name: '',
     gstNumber: '',
@@ -94,6 +102,7 @@ export class PurchaseScreenComponent implements OnInit {
     paymentMode: ''
   };
 
+  // ✅ Products master list — searchable dropdown ke liye
   products: Product[] = [];
   loadingProducts = false;
   productError = '';
@@ -133,6 +142,9 @@ export class PurchaseScreenComponent implements OnInit {
     this.loadProducts();
   }
 
+  // ==============================
+  // GETTERS
+  // ==============================
 
   get filteredInvoices(): PurchaseInvoice[] {
     const query = this.searchText.trim().toLowerCase();
@@ -163,6 +175,7 @@ export class PurchaseScreenComponent implements OnInit {
     return this.currentTab === 'purchase' ? 'New Purchase' : 'Create Supplier';
   }
 
+  // ✅ Line items valid hain ya nahi — har row mein product, qty>0, price>0 hona chahiye
   get lineItemsInvalid(): boolean {
     return this.newPurchase.items.length === 0 ||
       this.newPurchase.items.some(item =>
@@ -170,6 +183,9 @@ export class PurchaseScreenComponent implements OnInit {
       );
   }
 
+  // ==============================
+  // TAB / ACTION HANDLERS
+  // ==============================
 
   onActionClick() {
     if (this.currentTab === 'purchase') this.openNewPurchaseModal();
@@ -190,6 +206,9 @@ export class PurchaseScreenComponent implements OnInit {
     return map[status as string] || 'badge-unpaid';
   }
 
+  // ==============================
+  // PURCHASE MODAL
+  // ==============================
 
   openNewPurchaseModal() {
     this.showNewPurchaseModal = true;
@@ -216,15 +235,19 @@ export class PurchaseScreenComponent implements OnInit {
     return { productId: 0, quantity: 1, unitPrice: 0 };
   }
 
+  // ✅ Naya line item row add karo
   addItemRow() {
     this.newPurchase.items.push(this.createEmptyLineItem());
   }
 
+  // ✅ Row remove karo (kam se kam 1 row rehni chahiye)
   removeItemRow(index: number) {
     if (this.newPurchase.items.length === 1) return;
     this.newPurchase.items.splice(index, 1);
     this.recalculateTotal();
   }
+
+  // ✅ Product select hote hi uska price suggestion ke taur pe unit price mein fill karo
   onProductSelect(index: number) {
     const item = this.newPurchase.items[index];
     const product = this.products.find(p => p.id === +item.productId);
@@ -234,6 +257,15 @@ export class PurchaseScreenComponent implements OnInit {
     this.recalculateTotal();
   }
 
+  // ✅ Product thumbnail image load fail ho (broken URL / 404) to fallback icon dikhao
+  onProductImageError(event: Event) {
+    const imgEl = event.target as HTMLImageElement;
+    // Broken <img> ko chhupa do — HTML mein *ngIf="!item.imageUrl" wala placeholder icon
+    // already exist karta hai, is element ko hide karke wahi dikhne dete hain
+    imgEl.style.display = 'none';
+  }
+
+  // ✅ Total Amount ko sab line items ke sum se auto-calculate karo
   recalculateTotal() {
     this.newPurchase.totalAmount = this.newPurchase.items.reduce(
       (sum, item) => sum + (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0),
@@ -260,6 +292,7 @@ export class PurchaseScreenComponent implements OnInit {
     });
   }
 
+  // ✅ Products master list load karo (searchable dropdown ke liye)
   loadProducts() {
     this.loadingProducts = true;
     this.productError = '';
@@ -299,6 +332,10 @@ export class PurchaseScreenComponent implements OnInit {
            !this.isDuplicateInvoice;
   }
 
+  // ==============================
+  // SAVE PURCHASE
+  // ==============================
+
   saveNewPurchase() {
     this.formSubmitted = true;
     this.checkDuplicateInvoice();
@@ -312,6 +349,8 @@ export class PurchaseScreenComponent implements OnInit {
     const s = this.suppliers.find(x => x.id === supplierIdNum);
     const supplierName = s ? s.name : '';
 
+    // ✅ Backend POST API structure ke hisaab se payload banaya
+    // { supplierId, invoiceNumber, invoiceDate, dueDate, status, items: [{productId, quantity, unitPrice}] }
     const apiPayload = {
       supplierId: supplierIdNum,
       invoiceNumber: this.newPurchase.invoiceNo,
@@ -373,6 +412,8 @@ export class PurchaseScreenComponent implements OnInit {
 
   openNewSupplierModal() {
     this.newSupplier = { name: '', gstNumber: '', address: '', phone: '', paymentMode: '' };
+    this.supplierFormSubmitted = false;
+    this.isDuplicateSupplierPhone = false;
     this.showNewSupplierModal = true;
   }
 
@@ -388,17 +429,50 @@ export class PurchaseScreenComponent implements OnInit {
 
   closeNewSupplierModal() {
     this.showNewSupplierModal = false;
+    this.supplierFormSubmitted = false;
+    this.isDuplicateSupplierPhone = false;
+  }
+
+  // ✅ 10-digit phone number format check
+  isValidPhone(phone?: string): boolean {
+    if (!phone) return false;
+    return /^\d{10}$/.test(phone.trim());
+  }
+
+  // ✅ Same phone se already koi supplier bana hua to nahi
+  checkDuplicateSupplierPhone() {
+    const phone = (this.newSupplier.phone || '').trim();
+    if (!phone) {
+      this.isDuplicateSupplierPhone = false;
+      return;
+    }
+    this.isDuplicateSupplierPhone = this.suppliers.some(
+      s => (s.phone || '').trim() === phone
+    );
   }
 
   addSupplier() {
-    if (!this.newSupplier.name || !this.newSupplier.phone) return;
+    this.supplierFormSubmitted = true;
+    this.checkDuplicateSupplierPhone();
+
+    const isValid = !!this.newSupplier.name &&
+      this.isValidPhone(this.newSupplier.phone) &&
+      !this.isDuplicateSupplierPhone;
+
+    if (!isValid) return;
+
+    this.isSavingSupplier = true;
 
     this.supplierService.createSupplier(this.newSupplier as Supplier).subscribe({
       next: (created) => {
         this.suppliers = [created, ...this.suppliers];
+        this.isSavingSupplier = false;
+        this.showSuccessToast = true;
         this.closeNewSupplierModal();
+        setTimeout(() => (this.showSuccessToast = false), 3000);
       },
       error: (err) => {
+        this.isSavingSupplier = false;
         this.supplierError = 'Supplier create nahi hua: ' + err.message;
       }
     });
@@ -415,11 +489,4 @@ export class PurchaseScreenComponent implements OnInit {
   deleteInvoice(invoiceNumber: string): void {
     console.log('Delete invoice:', invoiceNumber);
   }
-
-onProductImageError(event: Event): void {
-  const target = event.target as HTMLImageElement;
-  if (target) {
-    target.style.display = 'none';
-  }
-}
 }

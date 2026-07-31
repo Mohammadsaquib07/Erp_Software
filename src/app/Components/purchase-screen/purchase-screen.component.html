@@ -187,8 +187,17 @@
 
   <div class="edit-modal-content edit-modal-wide">
 
-    <div class="edit-modal-header">
-      <h2>New Purchase Entry</h2>
+    <div class="edit-modal-header purchase-modal-header">
+
+      <div class="modal-header-title-group">
+        <span class="modal-header-icon purchase-header-icon">
+          <i class="pi pi-shopping-cart"></i>
+        </span>
+        <div>
+          <h2>New Purchase Entry</h2>
+          <p class="modal-header-subtitle">Record goods received from a supplier</p>
+        </div>
+      </div>
 
       <button
         class="edit-modal-close"
@@ -206,26 +215,29 @@
         <div class="form-field">
           <label>Supplier *</label>
 
-          <select
-            [(ngModel)]="newPurchase.supplier"
-            (ngModelChange)="onSupplierSelect($event)"
-            class="professional-input"
-            [class.input-error]="formSubmitted && !newPurchase.supplier">
+          <div class="input-with-icon">
+            <i class="pi pi-truck"></i>
+            <select
+              [(ngModel)]="newPurchase.supplier"
+              (ngModelChange)="onSupplierSelect($event)"
+              class="professional-input"
+              [class.input-error]="formSubmitted && !newPurchase.supplier">
 
-            <option value="">Select Supplier</option>
+              <option value="">Select Supplier</option>
 
-            <option
-              *ngFor="let s of suppliers"
-              [value]="s.id">
+              <option
+                *ngFor="let s of suppliers"
+                [value]="s.id">
 
-              {{ s.name }}
-            </option>
+                {{ s.name }}
+              </option>
 
-            <option value="__create__">
-              + Create Supplier
-            </option>
+              <option value="__create__">
+                + Create Supplier
+              </option>
 
-          </select>
+            </select>
+          </div>
 
           <span class="error-text" *ngIf="formSubmitted && !newPurchase.supplier">
             Supplier is required
@@ -235,12 +247,16 @@
         <div class="form-field">
           <label>Invoice Number *</label>
 
-          <input
-            type="text"
-            [(ngModel)]="newPurchase.invoiceNo"
-            (ngModelChange)="checkDuplicateInvoice()"
-            class="professional-input"
-            [class.input-error]="isDuplicateInvoice || (formSubmitted && !newPurchase.invoiceNo)">
+          <div class="input-with-icon">
+            <i class="pi pi-hashtag"></i>
+            <input
+              type="text"
+              placeholder="e.g. INV-2026-001"
+              [(ngModel)]="newPurchase.invoiceNo"
+              (ngModelChange)="checkDuplicateInvoice()"
+              class="professional-input"
+              [class.input-error]="isDuplicateInvoice || (formSubmitted && !newPurchase.invoiceNo)">
+          </div>
 
           <span class="error-text" *ngIf="isDuplicateInvoice">
             ⚠ Invoice number already exists for this supplier
@@ -253,11 +269,14 @@
         <div class="form-field">
           <label>Invoice Date *</label>
 
-          <input
-            type="date"
-            [(ngModel)]="newPurchase.date"
-            class="professional-input"
-            [class.input-error]="formSubmitted && !newPurchase.date">
+          <div class="input-with-icon">
+            <i class="pi pi-calendar"></i>
+            <input
+              type="date"
+              [(ngModel)]="newPurchase.date"
+              class="professional-input"
+              [class.input-error]="formSubmitted && !newPurchase.date">
+          </div>
 
           <span class="error-text" *ngIf="formSubmitted && !newPurchase.date">
             Date is required
@@ -267,24 +286,30 @@
         <div class="form-field">
           <label>Due Date</label>
 
-          <input
-            type="date"
-            [(ngModel)]="newPurchase.dueDate"
-            class="professional-input">
+          <div class="input-with-icon">
+            <i class="pi pi-calendar-plus"></i>
+            <input
+              type="date"
+              [(ngModel)]="newPurchase.dueDate"
+              class="professional-input">
+          </div>
         </div>
 
         <div class="form-field">
           <label>Status</label>
 
-          <select
-            [(ngModel)]="newPurchase.status"
-            class="professional-input">
+          <div class="input-with-icon">
+            <i class="pi pi-verified"></i>
+            <select
+              [(ngModel)]="newPurchase.status"
+              class="professional-input">
 
-            <option value="Paid">Paid</option>
-            <option value="Pending">Pending</option>
-            <option value="Unpaid">Unpaid</option>
+              <option value="Paid">Paid</option>
+              <option value="Pending">Pending</option>
+              <option value="Unpaid">Unpaid</option>
 
-          </select>
+            </select>
+          </div>
         </div>
 
       </div>
@@ -464,9 +489,17 @@
 
   <div class="edit-modal-content">
 
-    <div class="edit-modal-header">
+    <div class="edit-modal-header supplier-modal-header">
 
-      <h2>Create Supplier</h2>
+      <div class="modal-header-title-group">
+        <span class="modal-header-icon">
+          <i class="pi pi-truck"></i>
+        </span>
+        <div>
+          <h2>Create Supplier</h2>
+          <p class="modal-header-subtitle">Add a new vendor to your supplier list</p>
+        </div>
+      </div>
 
       <button
         class="edit-modal-close"
@@ -484,48 +517,86 @@
         <div class="form-field">
           <label>Supplier Name *</label>
 
-          <input
-            [(ngModel)]="newSupplier.name"
-            class="professional-input">
+          <div class="input-with-icon">
+            <i class="pi pi-user"></i>
+            <input
+              [(ngModel)]="newSupplier.name"
+              placeholder="e.g. DMart"
+              class="professional-input"
+              [class.input-error]="supplierFormSubmitted && !newSupplier.name">
+          </div>
+
+          <span class="error-text" *ngIf="supplierFormSubmitted && !newSupplier.name">
+            Supplier name is required
+          </span>
         </div>
 
         <div class="form-field">
           <label>Phone *</label>
 
-          <input
-            [(ngModel)]="newSupplier.phone"
-            class="professional-input">
+          <div class="input-with-icon">
+            <i class="pi pi-phone"></i>
+            <input
+              [(ngModel)]="newSupplier.phone"
+              (ngModelChange)="checkDuplicateSupplierPhone()"
+              maxlength="10"
+              placeholder="10-digit number"
+              class="professional-input"
+              [class.input-error]="isDuplicateSupplierPhone || (supplierFormSubmitted && !isValidPhone(newSupplier.phone))">
+          </div>
+
+          <span class="error-text" *ngIf="isDuplicateSupplierPhone">
+            ⚠ A supplier with this phone number already exists
+          </span>
+          <span class="error-text" *ngIf="!isDuplicateSupplierPhone && supplierFormSubmitted && !newSupplier.phone">
+            Phone number is required
+          </span>
+          <span class="error-text" *ngIf="!isDuplicateSupplierPhone && supplierFormSubmitted && newSupplier.phone && !isValidPhone(newSupplier.phone)">
+            Enter a valid 10-digit phone number
+          </span>
         </div>
 
         <div class="form-field">
           <label>GST Number</label>
 
-          <input
-            [(ngModel)]="newSupplier.gstNumber"
-            class="professional-input">
+          <div class="input-with-icon">
+            <i class="pi pi-file"></i>
+            <input
+              [(ngModel)]="newSupplier.gstNumber"
+              placeholder="Optional"
+              class="professional-input">
+          </div>
         </div>
 
         <div class="form-field">
           <label>Payment Mode</label>
 
-          <select
-            [(ngModel)]="newSupplier.paymentMode"
-            class="professional-input">
+          <div class="input-with-icon">
+            <i class="pi pi-wallet"></i>
+            <select
+              [(ngModel)]="newSupplier.paymentMode"
+              class="professional-input">
 
-            <option value="Cash">Cash</option>
-            <option value="Credit">Credit</option>
-            <option value="Bank Transfer">Bank Transfer</option>
+              <option value="" disabled selected>Select mode</option>
+              <option value="Cash">Cash</option>
+              <option value="Credit">Credit</option>
+              <option value="Bank Transfer">Bank Transfer</option>
 
-          </select>
+            </select>
+          </div>
         </div>
 
         <div class="form-field full-width">
 
           <label>Address</label>
 
-          <input
-            [(ngModel)]="newSupplier.address"
-            class="professional-input">
+          <div class="input-with-icon">
+            <i class="pi pi-map-marker"></i>
+            <input
+              [(ngModel)]="newSupplier.address"
+              placeholder="Shop / area / city"
+              class="professional-input">
+          </div>
 
         </div>
 
@@ -535,6 +606,7 @@
 
         <button
           class="btn-edit-cancel"
+          [disabled]="isSavingSupplier"
           (click)="closeNewSupplierModal()">
 
           Cancel
@@ -542,9 +614,11 @@
 
         <button
           class="btn-edit-save"
+          [disabled]="isSavingSupplier"
           (click)="addSupplier()">
 
-          Save Supplier
+          <i class="pi pi-spin pi-spinner" *ngIf="isSavingSupplier"></i>
+          {{ isSavingSupplier ? 'Saving...' : 'Save Supplier' }}
         </button>
 
       </div>
