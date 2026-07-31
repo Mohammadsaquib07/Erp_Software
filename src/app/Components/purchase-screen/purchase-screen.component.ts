@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
 import { SupplierServiceService } from '../../Services/supplier-service.service';
 import { PurchaseServiceService } from '../../Services/PurchaseService/purchase-service.service';
 import { PurchaseInvoiceApi } from '../../Model/Purchase_Model';
 import { ItemService } from '../../Services/item.service';
-// ⚠️ Ye import path apne actual Product/Item service ke hisaab se update karo
-// (jo GetItem API call karti hai)
 
 interface PurchaseInvoice {
   id?: number;
@@ -33,16 +32,13 @@ export interface Supplier {
   phone?: string;
   paymentMode?: string;
 }
-
-// ✅ Product master (Items table se aayega — id, name, price, stock)
 export interface Product {
   id: number;
   name: string;
   price: number;
   stock?: number;
+  imageUrl?: string;
 }
-
-// ✅ Ek line item row ka shape — modal ke items array ke liye
 interface PurchaseLineItem {
   productId: number;
   quantity: number;
@@ -52,7 +48,7 @@ interface PurchaseLineItem {
 @Component({
   selector: 'app-purchase-screen',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NgSelectModule],
   templateUrl: './purchase-screen.component.html',
   styleUrls: ['./purchase-screen.component.css']
 })
@@ -98,7 +94,6 @@ export class PurchaseScreenComponent implements OnInit {
     paymentMode: ''
   };
 
-  // ✅ Products master list — dropdown ke liye
   products: Product[] = [];
   loadingProducts = false;
   productError = '';
@@ -138,6 +133,7 @@ export class PurchaseScreenComponent implements OnInit {
     this.loadProducts();
   }
 
+
   get filteredInvoices(): PurchaseInvoice[] {
     const query = this.searchText.trim().toLowerCase();
     if (!query) {
@@ -167,7 +163,6 @@ export class PurchaseScreenComponent implements OnInit {
     return this.currentTab === 'purchase' ? 'New Purchase' : 'Create Supplier';
   }
 
-  // ✅ Line items valid hain ya nahi — har row mein product, qty>0, price>0 hona chahiye
   get lineItemsInvalid(): boolean {
     return this.newPurchase.items.length === 0 ||
       this.newPurchase.items.some(item =>
@@ -175,9 +170,6 @@ export class PurchaseScreenComponent implements OnInit {
       );
   }
 
-  // ==============================
-  // TAB / ACTION HANDLERS
-  // ==============================
 
   onActionClick() {
     if (this.currentTab === 'purchase') this.openNewPurchaseModal();
@@ -198,9 +190,6 @@ export class PurchaseScreenComponent implements OnInit {
     return map[status as string] || 'badge-unpaid';
   }
 
-  // ==============================
-  // PURCHASE MODAL
-  // ==============================
 
   openNewPurchaseModal() {
     this.showNewPurchaseModal = true;
@@ -227,19 +216,15 @@ export class PurchaseScreenComponent implements OnInit {
     return { productId: 0, quantity: 1, unitPrice: 0 };
   }
 
-  // ✅ Naya line item row add karo
   addItemRow() {
     this.newPurchase.items.push(this.createEmptyLineItem());
   }
 
-  // ✅ Row remove karo (kam se kam 1 row rehni chahiye)
   removeItemRow(index: number) {
     if (this.newPurchase.items.length === 1) return;
     this.newPurchase.items.splice(index, 1);
     this.recalculateTotal();
   }
-
-  // ✅ Product select hote hi uska price suggestion ke taur pe unit price mein fill karo
   onProductSelect(index: number) {
     const item = this.newPurchase.items[index];
     const product = this.products.find(p => p.id === +item.productId);
@@ -249,7 +234,6 @@ export class PurchaseScreenComponent implements OnInit {
     this.recalculateTotal();
   }
 
-  // ✅ Total Amount ko sab line items ke sum se auto-calculate karo
   recalculateTotal() {
     this.newPurchase.totalAmount = this.newPurchase.items.reduce(
       (sum, item) => sum + (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0),
@@ -276,7 +260,6 @@ export class PurchaseScreenComponent implements OnInit {
     });
   }
 
-  // ✅ Products master list load karo (Product dropdown ke liye)
   loadProducts() {
     this.loadingProducts = true;
     this.productError = '';
@@ -316,10 +299,6 @@ export class PurchaseScreenComponent implements OnInit {
            !this.isDuplicateInvoice;
   }
 
-  // ==============================
-  // SAVE PURCHASE
-  // ==============================
-
   saveNewPurchase() {
     this.formSubmitted = true;
     this.checkDuplicateInvoice();
@@ -333,8 +312,6 @@ export class PurchaseScreenComponent implements OnInit {
     const s = this.suppliers.find(x => x.id === supplierIdNum);
     const supplierName = s ? s.name : '';
 
-    // ✅ Backend POST API structure ke hisaab se payload banaya
-    // { supplierId, invoiceNumber, invoiceDate, dueDate, status, items: [{productId, quantity, unitPrice}] }
     const apiPayload = {
       supplierId: supplierIdNum,
       invoiceNumber: this.newPurchase.invoiceNo,
@@ -438,4 +415,11 @@ export class PurchaseScreenComponent implements OnInit {
   deleteInvoice(invoiceNumber: string): void {
     console.log('Delete invoice:', invoiceNumber);
   }
+
+onProductImageError(event: Event): void {
+  const target = event.target as HTMLImageElement;
+  if (target) {
+    target.style.display = 'none';
+  }
+}
 }

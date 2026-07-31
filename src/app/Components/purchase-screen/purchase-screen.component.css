@@ -620,6 +620,152 @@
 }
 
 /* ==============================
+   NG-SELECT — PRODUCT DROPDOWN
+   (deep overrides needed since ng-select
+   renders its own internal markup)
+============================== */
+
+.product-ng-select {
+  font-size: 13px;
+}
+
+/* Main input box — match height of other line-item inputs */
+::ng-deep .product-ng-select .ng-select-container {
+  min-height: 40px;
+  height: 40px;
+  border: 1px solid #dfe2e8;
+  border-radius: 8px;
+  padding: 0 4px;
+}
+
+::ng-deep .product-ng-select.ng-select-focused .ng-select-container {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+::ng-deep .product-ng-select.input-error .ng-select-container {
+  border-color: #e53935 !important;
+}
+
+/* Selected value row */
+::ng-deep .product-ng-select .ng-value-container {
+  padding: 0 6px;
+  align-items: center;
+}
+
+/* ============ DROPDOWN PANEL ============
+   NOTE: because the ng-select is set to [appendTo]="'body'"
+   (to avoid clipping/overlap inside the table), the panel no
+   longer lives inside .product-ng-select in the DOM — it's
+   appended directly to <body>. So these rules target the
+   panelClass="product-ng-select-panel" globally via ::ng-deep,
+   NOT nested under .product-ng-select. */
+
+::ng-deep .product-ng-select-panel.ng-dropdown-panel {
+  border-radius: 10px;
+  border: 1px solid #e2e6ec;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
+  margin-top: 4px;
+  min-width: 320px;
+  z-index: 2000;
+}
+
+::ng-deep .product-ng-select-panel .ng-dropdown-panel-items {
+  max-height: 260px;
+  padding: 6px;
+}
+
+/* Each option row — proper height + spacing so nothing feels cramped */
+::ng-deep .product-ng-select-panel .ng-option {
+  padding: 8px 10px;
+  border-radius: 8px;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+}
+
+::ng-deep .product-ng-select-panel .ng-option.ng-option-marked,
+::ng-deep .product-ng-select-panel .ng-option:hover {
+  background: #eff6ff;
+}
+
+::ng-deep .product-ng-select-panel .ng-option.ng-option-selected {
+  background: #dbeafe;
+  font-weight: 600;
+}
+
+/* Search input inside the panel */
+::ng-deep .product-ng-select-panel .ng-search input {
+  border: 1px solid #dfe2e8;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+/* The image/text template inside the appended panel needs its
+   layout rules re-declared globally too, since .product-option
+   etc. defined below are still scoped to this component and
+   WILL apply fine to ng-label-tmp (stays inside component DOM),
+   but for ng-option-tmp rendered inside the body-appended panel,
+   Angular keeps the same content-projection context so scoped
+   styles still apply correctly — no duplication needed here. */
+
+/* ============ CUSTOM OPTION LAYOUT (image + text) ============ */
+
+.product-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.product-thumb {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  border: 1px solid #e6e9ef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.product-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.thumb-placeholder-icon {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.product-option-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.product-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e2635;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-meta {
+  font-size: 11.5px;
+  color: #6b7280;
+}
+
+/* ==============================
    MOBILE
 ============================== */
 

@@ -312,19 +312,60 @@
             </thead>
             <tbody>
               <tr *ngFor="let item of newPurchase.items; let i = index">
+
+                <!-- ============ SEARCHABLE PRODUCT DROPDOWN (ng-select) ============ -->
                 <td class="col-product">
-                  <select
+                  <ng-select
+                    [items]="products"
+                    bindLabel="name"
+                    bindValue="id"
                     [(ngModel)]="item.productId"
                     [ngModelOptions]="{standalone: true}"
-                    (ngModelChange)="onProductSelect(i)"
-                    class="professional-input line-input"
+                    (change)="onProductSelect(i)"
+                    placeholder="Search product..."
+                    [clearable]="false"
+                    [searchable]="true"
+                    appendTo="body"
+                    panelClass="product-ng-select-panel"
+                    class="product-ng-select"
                     [class.input-error]="formSubmitted && !item.productId">
 
-                    <option [value]="0">Select Product</option>
-                    <option *ngFor="let p of products" [value]="p.id">
-                      {{ p.name }}
-                    </option>
-                  </select>
+                    <!-- Selected value display (image + name) -->
+                    <ng-template ng-label-tmp let-item="item">
+                      <div class="product-option">
+                        <div class="product-thumb">
+                          <img
+                            *ngIf="item.imageUrl"
+                            [src]="item.imageUrl"
+                            alt=""
+                            (error)="onProductImageError($event)">
+                          <i *ngIf="!item.imageUrl" class="pi pi-image thumb-placeholder-icon"></i>
+                        </div>
+                        <span class="product-name">{{ item.name }}</span>
+                      </div>
+                    </ng-template>
+
+                    <!-- Dropdown list item display (image + name + price + stock) -->
+                    <ng-template ng-option-tmp let-item="item">
+                      <div class="product-option">
+                        <div class="product-thumb">
+                          <img
+                            *ngIf="item.imageUrl"
+                            [src]="item.imageUrl"
+                            alt=""
+                            (error)="onProductImageError($event)">
+                          <i *ngIf="!item.imageUrl" class="pi pi-image thumb-placeholder-icon"></i>
+                        </div>
+                        <div class="product-option-details">
+                          <span class="product-name">{{ item.name }}</span>
+                          <span class="product-meta">
+                            ₹{{ item.price }} · Stock: {{ item.stock ?? '—' }}
+                          </span>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                  </ng-select>
                 </td>
 
                 <td class="col-qty">
