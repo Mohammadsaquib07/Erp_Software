@@ -1,100 +1,99 @@
 <div class="page-wrapper">
   <div *ngIf="pageMode === 'sales'" class="sales-content">
     <!-- Bootstrap Toast -->
-  <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
-    <div class="toast" [ngClass]="{'show': successMessage}" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="toast-header bg-success text-white">
-        <i class="pi pi-check-circle me-2"></i>
-        <strong class="me-auto">Success</strong>
-        <button type="button" class="btn-close btn-close-white" (click)="successMessage = ''"></button>
-      </div>
-      <div class="toast-body">
-        {{ successMessage }}
-      </div>
-    </div>
-    <div class="toast" [ngClass]="{'show': errorMessage}" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="toast-header bg-danger text-white">
-        <i class="pi pi-exclamation-triangle me-2"></i>
-        <strong class="me-auto">Error</strong>
-        <button type="button" class="btn-close btn-close-white" (click)="errorMessage = ''"></button>
-      </div>
-      <div class="toast-body">
-        {{ errorMessage }}
-      </div>
-    </div>
-  </div>
-  <div class="modal fade" [ngClass]="{'show': showDeleteConfirm, 'd-block': showDeleteConfirm}" tabindex="-1"
-    [attr.aria-hidden]="!showDeleteConfirm">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Confirm Deletion</h5>
-          <button type="button" class="btn-close" (click)="cancelDelete()"></button>
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+      <div class="toast" [ngClass]="{'show': successMessage}" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-success text-white">
+          <i class="pi pi-check-circle me-2"></i>
+          <strong class="me-auto">Success</strong>
+          <button type="button" class="btn-close btn-close-white" (click)="successMessage = ''"></button>
         </div>
-        <div class="modal-body">
-          Are you sure you want to delete this product?
+        <div class="toast-body">
+          {{ successMessage }}
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
-          <button type="button" class="btn btn-danger" (click)="confirmDelete()">Delete</button>
+      </div>
+      <div class="toast" [ngClass]="{'show': errorMessage}" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-danger text-white">
+          <i class="pi pi-exclamation-triangle me-2"></i>
+          <strong class="me-auto">Error</strong>
+          <button type="button" class="btn-close btn-close-white" (click)="errorMessage = ''"></button>
+        </div>
+        <div class="toast-body">
+          {{ errorMessage }}
         </div>
       </div>
     </div>
-  </div>
-  <div class="modal-backdrop fade show" *ngIf="showDeleteConfirm"></div>
-  <div class="kpi-row" *ngIf="dashboardData">
-    <div class="kpi-card green">
-      <span class="label">Today's Sales</span>
-      <p class="value bi bi-currency-rupee">{{dashboardData.todayslSales}}</p>
+    <div class="modal fade" [ngClass]="{'show': showDeleteConfirm, 'd-block': showDeleteConfirm}" tabindex="-1"
+      [attr.aria-hidden]="!showDeleteConfirm">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirm Deletion</h5>
+            <button type="button" class="btn-close" (click)="cancelDelete()"></button>
+          </div>
+          <div class="modal-body">
+            Are you sure you want to delete this product?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
+            <button type="button" class="btn btn-danger" (click)="confirmDelete()">Delete</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="kpi-card blue">
-      <span class="label">Total Orders</span>
-      <p class="value d-flex align-items-center gap-2 bi bi-cart">{{dashboardData.totalOrders}}</p>
+    <div class="modal-backdrop fade show" *ngIf="showDeleteConfirm"></div>
+    <div class="kpi-row" *ngIf="dashboardData">
+      <div class="kpi-card green">
+        <span class="label">Today's Sales</span>
+        <p class="value bi bi-currency-rupee">{{dashboardData.todayslSales}}</p>
+      </div>
+      <div class="kpi-card blue">
+        <span class="label">Total Orders</span>
+        <p class="value d-flex align-items-center gap-2 bi bi-cart">{{dashboardData.totalOrders}}</p>
+      </div>
+      <div class="kpi-card orange">
+        <span class="label">Avg. Order Value</span>
+        <p class="value bi bi-currency-rupee">{{dashboardData.avgOrderValue}}</p>
+      </div>
+      <div class="kpi-card purple">
+        <span class="label">Top Product</span>
+        <p class="value d-flex align-items-center bi bi-graph-up gap-2">{{dashboardData.topProduct}}</p>
+      </div>
     </div>
-    <div class="kpi-card orange">
-      <span class="label">Avg. Order Value</span>
-      <p class="value bi bi-currency-rupee">{{dashboardData.avgOrderValue}}</p>
-    </div>
-    <div class="kpi-card purple">
-      <span class="label">Top Product</span>
-      <p class="value d-flex align-items-center bi bi-graph-up gap-2">{{dashboardData.topProduct}}</p>
-    </div>
-  </div>
-
-  <div class="orders-section">
-    <h3>Recent Orders</h3>
-    <table class="orders-table">
-      <thead>
-        <tr>
-          <th>Order ID</th>
-          <th>Customer</th>
-          <th>Items</th>
-          <th>Amount</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let o of recentOrders">
-          <td>#{{ o.orderId }}</td>
-          <td>{{ o.customerName }}</td>
-          <td>{{ o.items }}</td>
-          <td>₹{{ o.amount }}</td>
-          <td>
-            <span class="status" [ngClass]="{
+    <div class="orders-section">
+      <h3>Recent Orders</h3>
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of recentOrders">
+            <td>#{{ o.orderId }}</td>
+            <td>{{ o.customerName }}</td>
+            <td>{{ o.items }}</td>
+            <td>₹{{ o.amount }}</td>
+            <td>
+              <span class="status" [ngClass]="{
                 'danger': o.status.toLowerCase() === 'pending',
                 'success': o.status.toLowerCase() === 'completed'
               }">
-              {{ o.status }}
-            </span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="actions">
-    <button class="btn primary" (click)="openInvoicePage()">+ New Invoice</button>
-    <button class="btn secondary" (click)="viewPrintReports()">Print Sales Report</button>
-  </div>
+                {{ o.status }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="actions">
+      <button class="btn primary" (click)="openInvoicePage()">+ New Invoice</button>
+      <button class="btn secondary" (click)="viewPrintReports()">Print Sales Report</button>
+    </div>
   </div>
   <div *ngIf="pageMode === 'inventory'" class="sales-content">
     <!-- Inventory KPI Cards using same grid as sales -->
@@ -141,8 +140,7 @@
                     'success': product.stock > 10,
                     'warning': product.stock <= 10 && product.stock > 0
                   }">
-                  {{ product.stock === 0 ? 'Out of Stock' : (product.stock <= 10 ? 'Low Stock' : 'In Stock') }}
-                </span>
+                  {{ product.stock === 0 ? 'Out of Stock' : (product.stock <= 10 ? 'Low Stock' : 'In Stock' ) }} </span>
               </td>
             </tr>
           </tbody>
@@ -155,7 +153,7 @@
       <button class="btn secondary" (click)="viewInventoryReports()">Print Inventory Report</button>
     </div>
   </div>
-
+  <div class="drawer-overlay" *ngIf="isInvoiceOpen" (click)="closeInvoice()"></div>
   <div class="invoice-drawer" *ngIf="pageMode === 'sales'" [class.open]="isInvoiceOpen">
     <div class="invoice-drawer-header">
       <div class="invoice-header-top">
@@ -203,7 +201,8 @@
                 </tr>
               </thead>
               <tbody formArrayName="items">
-                <tr *ngFor="let row of items.controls; let rowIndex = index" [formGroupName]="rowIndex" class="item-row">
+                <tr *ngFor="let row of items.controls; let rowIndex = index" [formGroupName]="rowIndex"
+                  class="item-row">
                   <td class="col-product">
                     <select class="professional-select" formControlName="productId"
                       (change)="onProductChange(rowIndex)">
@@ -240,7 +239,8 @@
         <div class="invoice-section">
           <div class="form-field">
             <label>Notes / Special Instructions</label>
-            <input type="text" formGroupName="invoice" formControlName="notes" placeholder="Optional notes for this invoice" class="professional-input" />
+            <input type="text" formGroupName="invoice" formControlName="notes"
+              placeholder="Optional notes for this invoice" class="professional-input" />
           </div>
         </div>
 
@@ -263,20 +263,17 @@
 
         <!-- Action Buttons -->
         <div class="invoice-actions">
-          <button  class="btn-save-invoice" [disabled]="form.invalid" type="button" (click)="saveInvoice()">
+          <button class="btn-save-invoice" [disabled]="form.invalid" type="button" (click)="saveInvoice()">
             <i class="pi pi-check"></i> Save Invoice
           </button>
           <button class="btn-cancel-invoice" type="button" (click)="closeInvoice()">
             Cancel
           </button>
-          
         </div>
-        <div class="border">
-{{invoiceResponseData | json}}
-          </div>
       </form>
     </div>
   </div>
+  <div class="drawer-overlay" *ngIf="isManageProductOpen" (click)="closeManageProductPage()"></div>
   <div class="manageproduct-drawer" [class.open]="isManageProductOpen">
     <div class="product-drawer-header">
       <div class="product-header-top">
@@ -302,130 +299,137 @@
             <div class="form-field">
               <label>Price (₹) <span class="required">*</span></label>
               <input type="number" class="professional-input" formControlName="Price" placeholder="0.00"
+                [attr.disabled]="variationRows.length ? true : null"
                 [ngClass]="{'is-invalid': Add['Price'].touched && Add['Price'].invalid,'is-valid':Add['Price'].touched && Add['Price'].valid}" />
             </div>
             <div class="form-field">
               <label>Stock Units <span class="required">*</span></label>
               <input type="number" class="professional-input" formControlName="Stock" placeholder="0"
+                [attr.disabled]="variationRows.length ? true : null"
                 [ngClass]="{'is-invalid': Add['Stock'].touched && Add['Stock'].invalid,'is-valid':Add['Stock'].touched && Add['Stock'].valid}" />
             </div>
           </div>
+          <p class="pv-price-note" *ngIf="variationRows.length">
+            Price &amp; stock are managed per variant below — the fields above are used only as a starting default.
+          </p>
+          <section class="product-variations">
 
-          <!-- ================= PRODUCT VARIATIONS SECTION ================= -->
-         
-          <!-- ================= PRODUCT VARIATIONS (IMPROVED REAL WORLD) ================= -->
-<section class="product-variations">
+            <!-- HEADER -->
+            <div class="pv-header">
+              <div>
+                <h3 class="pv-title">Product Variations</h3>
+                <p class="pv-subtitle">
+                  Add options like Color, Size, Material and generate real product variants
+                </p>
+              </div>
 
-  <!-- HEADER -->
-  <div class="pv-header">
-    <div>
-      <h3 class="pv-title">Product Variations</h3>
-      <p class="pv-subtitle">
-        Add options like Color, Size, Material and generate real product variants
-      </p>
-    </div>
+              <button class="pv-add-type-btn" type="button" (click)="addVariationType()">
+                + Add Option Type
+              </button>
+            </div>
 
-    <button class="pv-add-type-btn" type="button" (click)="addVariationType()">
-      + Add Option Type
-    </button>
-  </div>
+            <!-- OPTION TYPES -->
+            <div class="pv-options">
 
-  <!-- OPTION TYPES -->
-  <div class="pv-options">
+              <div class="pv-option-card" *ngFor="let vt of variationTypes; let i = index">
 
-    <div class="pv-option-card" *ngFor="let vt of variationTypes; let i = index">
+                <div class="pv-option-header">
+                  <div class="pv-field-block">
+                    <label class="pv-field-label">Option type name</label>
+                    <input class="pv-option-name" [(ngModel)]="vt.name" [ngModelOptions]="{standalone: true}"
+                      placeholder="e.g. Color, Size, Material" />
+                  </div>
 
-      <div class="pv-option-header">
-        <input class="pv-option-name"
-               [(ngModel)]="vt.name"
-               placeholder="e.g. Color, Size" />
+                  <button class="pv-remove" type="button" (click)="removeVariationType(vt.id)" title="Remove this option type">
+                    ✕
+                  </button>
+                </div>
 
-        <button class="pv-remove" type="button"
-                (click)="removeVariationType(vt.id)">
-          ✕
-        </button>
-      </div>
+                <div class="pv-option-values">
+                  <label class="pv-field-label">Values for "{{ vt.name || 'this option' }}"</label>
 
-      <div class="pv-option-values">
-        <div class="pv-tags">
-          <span class="pv-tag" *ngFor="let val of vt.options">
-            {{ val }}
-            <button (click)="removeOptionFromType(vt.id, val)">×</button>
-          </span>
-        </div>
+                  <div class="pv-tags" *ngIf="vt.options.length">
+                    <span class="pv-tag" *ngFor="let val of vt.options">
+                      {{ val }}
+                      <button type="button" (click)="removeOptionFromType(vt.id, val)">×</button>
+                    </span>
+                  </div>
+                  <p class="pv-no-values" *ngIf="!vt.options.length">
+                    No values added yet — type a value below (e.g. Red, Blue) and click Add.
+                  </p>
 
-        <div class="pv-add-value">
-          <input #optInput class="pv-input" placeholder="Add value (Red, Blue)" />
-          <button type="button"
-                  (click)="addOptionValue(vt.id, optInput.value); optInput.value=''">
-            Add
-          </button>
-        </div>
-      </div>
+                  <div class="pv-add-value">
+                    <input #optInput class="pv-input" placeholder="Add value (e.g. Red, Blue)" />
+                    <button type="button" (click)="addOptionValue(vt.id, optInput.value); optInput.value=''">
+                      Add
+                    </button>
+                  </div>
+                </div>
 
-    </div>
+              </div>
 
-  </div>
+              <p class="pv-no-types" *ngIf="!variationTypes.length">
+                No option types yet. Click "+ Add Option Type" to start (e.g. Color, Size).
+              </p>
 
-  <!-- GENERATE BUTTON -->
-  <div class="pv-actions">
-    <button class="btn btn-primary" type="button" (click)="generateVariationRows()">
-      Generate Variants
-    </button>
-  </div>
+            </div>
+            <div class="pv-actions">
+              <button class="btn btn-primary" type="button" [disabled]="!hasAllOptionsValues()"
+                (click)="generateVariationRows()">
+                Generate Variants
+              </button>
+              <p class="pv-generate-hint" *ngIf="hasAnyMissingOptions()">
+                Add at least one value to every option type above before generating.
+              </p>
+            </div>
+            <div class="pv-table-wrapper" *ngIf="variationRows.length">
 
-  <!-- VARIANTS TABLE -->
-  <div class="pv-table-wrapper" *ngIf="variationRows?.length">
+              <table class="pv-table">
 
-    <table class="pv-table">
+                <thead>
+                  <tr>
+                    <th *ngFor="let vt of variationTypes">{{ vt.name }}</th>
+                    <th>SKU</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
 
-      <thead>
-        <tr>
-          <th *ngFor="let vt of variationTypes">{{ vt.name }}</th>
-          <th>SKU</th>
-          <th>Price</th>
-          <th>Stock</th>
-          <th>Status</th>
-        </tr>
-      </thead>
+                <tbody>
 
-      <tbody>
+                  <tr *ngFor="let row of variationRows">
 
-        <tr *ngFor="let row of variationRows">
+                    <td *ngFor="let val of row.values">
+                      {{ val }}
+                    </td>
 
-          <td *ngFor="let val of row.values">
-            {{ val }}
-          </td>
+                    <td><input [(ngModel)]="row.sku" [ngModelOptions]="{standalone: true}" class="pv-input"></td>
+                    <td><input type="number" [(ngModel)]="row.purchasePrice" [ngModelOptions]="{standalone: true}" class="pv-input"></td>
+                    <td><input type="number" [(ngModel)]="row.stockQty" [ngModelOptions]="{standalone: true}" class="pv-input"></td>
 
-          <td><input [(ngModel)]="row.sku" class="pv-input"></td>
-          <td><input type="number" [(ngModel)]="row.purchasePrice" class="pv-input"></td>
-          <td><input type="number" [(ngModel)]="row.stockQty" class="pv-input"></td>
+                    <td>
+                      <select [(ngModel)]="row.status" [ngModelOptions]="{standalone: true}" class="pv-input">
+                        <option>Active</option>
+                        <option>Inactive</option>
+                      </select>
+                    </td>
 
-          <td>
-            <select [(ngModel)]="row.status" class="pv-input">
-              <option>Active</option>
-              <option>Inactive</option>
-            </select>
-          </td>
+                  </tr>
 
-        </tr>
+                </tbody>
 
-      </tbody>
+              </table>
 
-    </table>
+            </div>
 
-  </div>
+            <div class="pv-empty" *ngIf="!variationRows.length">
+              No variants generated yet. Add options and click "Generate Variants".
+            </div>
 
-  <div class="pv-empty" *ngIf="!variationRows?.length">
-    No variants generated yet. Add options and click "Generate Variants".
-  </div>
+          </section>
 
-</section>
-
-
-
-          <button class="btn-add-product" type="button" [disabled]="createItemForm.invalid"
-            (click)="addProduct()">
+          <button class="btn-add-product" type="button" [disabled]="createItemForm.invalid" (click)="addProduct()">
             <i class="pi pi-plus"></i> Add Product
           </button>
         </form>
@@ -439,26 +443,36 @@
             <thead>
               <tr>
                 <th>Product Name</th>
-                <th class="text-center">Price</th>
-                <th class="text-center">Stock</th>
-                <th class="text-center">Actions</th>
+                <th style="text-align: center;">Price</th>
+                <th style="text-align: center;">Stock</th>
+                <th style="text-align: center;">Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let product of productList" class="product-row">
-                <td class="product-name">{{ product.name }}</td>
-                <td class="text-center price-cell">₹{{ product.price | number:'1.2-2' }}</td>
-                <td class="text-center stock-cell">
-                  <span class="stock-badge" [ngClass]="{'low-stock': product.stock < 10, 'good-stock': product.stock >= 10}">
+                <td class="product-name">
+                  <div>{{ product.name }}</div>
+                  <small *ngIf="product.variants?.length" class="product-variant-count">
+                    {{ product.variants.length }} variant{{ product.variants.length > 1 ? 's' : '' }}
+                  </small>
+                </td>
+                <td style="text-align: center;" class="price-cell">₹{{ product.price | number:'1.2-2' }}</td>
+                <td style="text-align: center;" class="stock-cell">
+                  <span class="stock-badge"
+                    [ngClass]="{'low-stock': product.stock < 10, 'good-stock': product.stock >= 10}">
                     {{ product.stock }}
                   </span>
                 </td>
-                <td class="text-center action-cell">
+                <td style="text-align: center;" class="action-cell">
                   <button class="btn-edit-product" (click)="openEditModal(product)" title="Edit product">
                     <i class="pi pi-pencil"></i>
                   </button>
                   <button class="btn-delete-product" (click)="deleteProduct(product.id)" title="Delete product">
                     <i class="pi pi-trash"></i>
+                  </button>
+                  <button *ngIf="product.variants?.length" type="button" class="btn-variant-view"
+                    (click)="openVariantDetails(product)">
+                    View Variants
                   </button>
                 </td>
               </tr>
@@ -469,6 +483,42 @@
               </tr>
             </tbody>
           </table>
+        </div>
+        <div class="variant-details-panel" *ngIf="selectedVariantProduct">
+          <div class="variant-details-header">
+            <div>
+              <h4>Variants for {{ selectedVariantProduct.name }}</h4>
+              <p>
+                {{ selectedVariantProduct.variants?.length ?? 0 }} variant{{ (selectedVariantProduct.variants?.length ??
+                0) > 1 ? 's' : '' }}
+              </p>
+            </div>
+            <button class="product-close-btn" type="button" (click)="closeVariantDetails()">
+              <i class="pi pi-times"></i>
+            </button>
+          </div>
+          <div class="variant-details-body">
+            <table class="pv-table">
+              <thead>
+                <tr>
+                  <th *ngFor="let value of selectedVariantValues; let i = index">Option {{ i + 1 }}</th>
+                  <th>SKU</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let variant of (selectedVariantProduct.variants ?? [])">
+                  <td *ngFor="let value of variant.values">{{ value }}</td>
+                  <td>{{ variant.sku || '-' }}</td>
+                  <td>₹{{ variant.purchasePrice | number:'1.2-2' }}</td>
+                  <td>{{ variant.stockQty }}</td>
+                  <td>{{ variant.status }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -523,7 +573,8 @@
       <div class="edit-modal-body">
         <div class="form-field">
           <label>Product Name <span class="required">*</span></label>
-          <input type="text" class="professional-input modal-input" formControlName="Name" placeholder="Enter product name"
+          <input type="text" class="professional-input modal-input" formControlName="Name"
+            placeholder="Enter product name"
             [ngClass]="{'is-invalid': f['Name'].touched && f['Name'].invalid,'is-valid':f['Name'].touched && f['Name'].valid}" />
         </div>
 
@@ -552,10 +603,8 @@
     </form>
   </div>
 </div>
-
-<!-- Backdrop for Report Drawer -->
-<div class="drawer-backdrop" *ngIf="isReportOpen || isInventoryReportOpen" (click)="isReportOpen ? closeReportPage() : closeInventoryReportPage()"></div>
-
-<!-- Print Report Drawer -->
+<div class="drawer-backdrop" *ngIf="isReportOpen || isInventoryReportOpen"
+  (click)="isReportOpen ? closeReportPage() : closeInventoryReportPage()"></div>
 <app-print-report *ngIf="isReportOpen" (closeReport)="closeReportPage()"></app-print-report>
-<app-print-report *ngIf="isInventoryReportOpen" [reportMode]="'inventory'" (closeReport)="closeInventoryReportPage()"></app-print-report>
+<app-print-report *ngIf="isInventoryReportOpen" [reportMode]="'inventory'"
+  (closeReport)="closeInventoryReportPage()"></app-print-report>

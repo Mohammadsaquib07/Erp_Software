@@ -25,11 +25,12 @@ import { PrintReportComponent } from '../print-report/print-report.component';
   selector: 'app-product-component',
   standalone: true,
   imports: [CommonModule, RouterModule, ReactiveFormsModule, FormsModule, InputTextModule, PrintReportComponent],
-  templateUrl: './product-component.component.html',
+  templateUrl:'./product-component.component.html',
   styleUrls: ['./product-component.component.css']
 })
 
 export class ProductComponent implements OnInit {
+
   form: FormGroup;
   isInvoiceOpen = false;
   showModal = false;
@@ -42,10 +43,23 @@ export class ProductComponent implements OnInit {
   showEditModal = false;
   isManageProductOpen = false;
   selectedProduct: any = null;
+  selectedVariantProduct: Product | null = null;
   editForm!: FormGroup;
   createItemForm!: FormGroup;
   invoiceItems: InvoiceProduct[] = []
   successMessage: string = '';
+
+  openVariantDetails(product: Product): void {
+    this.selectedVariantProduct = product;
+  }
+
+  closeVariantDetails(): void {
+    this.selectedVariantProduct = null;
+  }
+
+  get selectedVariantValues(): string[] {
+    return this.selectedVariantProduct?.variants?.[0]?.values ?? [];
+  }
   errorMessage: string = '';
   showDeleteConfirm = false;
   productToDelete: number | null = null;
@@ -53,11 +67,11 @@ export class ProductComponent implements OnInit {
   recentOrderService = inject(RecentOrdersService)
   recentOrders: RecentOrderDto[] = [];
   dashboardData: DashboardCardsDto | null = null;
-  private getInvoiceService  = inject(GetInvoiceService)
+  private getInvoiceService = inject(GetInvoiceService)
   private route = inject(ActivatedRoute)
   invoiceResponseData = signal<DetailedInvoiceResponse | null>(null);
   private SaveService = inject(SaveServiceService)
- private router = inject(Router)
+  private router = inject(Router)
   openEditModal(product: any) {
     this.showEditModal = true;
     this.selectedProduct = product;
@@ -92,7 +106,7 @@ export class ProductComponent implements OnInit {
   closeEditModal() {
     this.showEditModal = false;
   }
-  @Input() productListData: any[] = [];   
+  @Input() productListData: any[] = [];
   @Output() close = new EventEmitter<void>();
   openModal() {
     this.showModal = true;
@@ -124,126 +138,100 @@ export class ProductComponent implements OnInit {
     });
   }
 
-  /* Variations feature state and types */
-
   variationTypes: Array<{
-  id: string;
-  name: string;
-  options: string[];
-}> = [];
+    id: string;
+    name: string;
+    options: string[];
+  }> = [];
 
   variationRows: Array<{
-  values: string[];
-  sku: string;
-  barcode?: string;
-  purchasePrice?: number;
-  sellingPrice?: number;
-  stockQty?: number;
-  weight?: string;
-  image?: string;
-  status: 'Active' | 'Inactive';
-}> = [];
-
-  // Helpers
+    values: string[];
+    sku: string;
+    barcode?: string;
+    purchasePrice?: number;
+    sellingPrice?: number;
+    stockQty?: number;
+    weight?: string;
+    image?: string;
+    status: 'Active' | 'Inactive';
+  }> = [];
   addVariationType(name: string = ''): void {
-  const id =
-    'vt-' + Date.now().toString(36) + '-' + this.variationTypes.length;
+    const id =
+      'vt-' + Date.now().toString(36) + '-' + this.variationTypes.length;
 
-  this.variationTypes.push({
-    id,
-    name: name || 'Option',
-    options: []
-  });
+    this.variationTypes.push({
+      id,
+      name: name || 'Option',
+      options: []
+    });
 
-  this.generateVariationRows();
-}
-
-  removeVariationType(id: string): void {
-  this.variationTypes = this.variationTypes.filter(v => v.id !== id);
-  this.generateVariationRows();
-}
-
-  addOptionToType(typeId: string, value: string): void {
-  const type = this.variationTypes.find(v => v.id === typeId);
-  if (!type) return;
-
-  const val = value?.trim();
-  if (!val) return;
-
-  if (!type.options.includes(val)) {
-    type.options.push(val);
+    this.generateVariationRows();
   }
+  removeVariationType(id: string): void {
+    this.variationTypes = this.variationTypes.filter(v => v.id !== id);
+    this.generateVariationRows();
+  }
+  addOptionToType(typeId: string, value: string): void {
+    const type = this.variationTypes.find(v => v.id === typeId);
+    if (!type) return;
 
-  this.generateVariationRows();
-}
+    const val = value?.trim();
+    if (!val) return;
 
-  // Template-friendly wrapper used by the HTML (keeps naming intuitive)
+    if (!type.options.includes(val)) {
+      type.options.push(val);
+    }
+
+    this.generateVariationRows();
+  }
   addOptionValue(typeId: string, value: string): void {
     this.addOptionToType(typeId, value);
   }
-
   removeOptionFromType(typeId: string, optionValue: string): void {
-  const type = this.variationTypes.find(v => v.id === typeId);
-  if (!type) return;
+    const type = this.variationTypes.find(v => v.id === typeId);
+    if (!type) return;
 
-  type.options = type.options.filter(o => o !== optionValue);
+    type.options = type.options.filter(o => o !== optionValue);
 
-  this.generateVariationRows();
-}
-
-  generateVariationRows(): void {
-  if (!this.variationTypes.length) {
-    this.variationRows = [];
-    return;
+    this.generateVariationRows();
   }
+  private cartesianProduct(arrays: string[][]): string[][] {
+    return arrays.reduce<string[][]>(
+      (acc, curr) => acc.flatMap(a => curr.map(c => [...a, c])),
+      [[]]
+    );
+  }
+  generateVariationRows(): void {
+    const optionSets = this.variationTypes.map(vt => vt.options);
 
-  const optionLists = this.variationTypes.map(v =>
-    v.options.length ? v.options : ['']
-  );
+    // Only generate variants when every option type has at least one value.
+    if (!optionSets.length || optionSets.some(options => !options.length)) {
+      this.variationRows = [];
+      return;
+    }
 
-  const combos: string[][] = optionLists.reduce(
-    (acc: string[][], curr: string[]) => {
-      const res: string[][] = [];
+    const defaultPrice = this.createItemForm.get('Price')?.value ?? 0;
+    const defaultStock = this.createItemForm.get('Stock')?.value ?? 0;
 
-      acc.forEach(a => {
-        curr.forEach(c => res.push([...a, c]));
-      });
+    const combos = this.cartesianProduct(optionSets);
 
-      return res;
-    },
-    [[]]
-  );
-
-  this.variationRows = combos.map((comb, idx) => {
-    const existing = this.variationRows[idx];
-
-    return {
-      values: comb,
-      sku:
-        existing?.sku ||
-        `SKU-${Date.now().toString(36).toUpperCase()}-${idx}`,
-      barcode: existing?.barcode || '',
-      purchasePrice: existing?.purchasePrice || 0,
-      sellingPrice: existing?.sellingPrice || 0,
-      stockQty: existing?.stockQty || 0,
-      weight: existing?.weight || '',
-      image: existing?.image || '',
-      status: existing?.status || 'Active'
-    };
-  });
-}
-
-/* Bulk update */
-bulkUpdate(
-  field: 'purchasePrice' | 'sellingPrice' | 'stockQty',
-  value: number
-): void {
-  this.variationRows = this.variationRows.map(r => ({
-    ...r,
-    [field]: value
-  }));
-}
-
+    this.variationRows = combos.map(values => ({
+      values,
+      sku: '',
+      purchasePrice: defaultPrice,
+      stockQty: defaultStock,
+      status: 'Active'
+    }));
+  }
+  bulkUpdate(
+    field: 'purchasePrice' | 'sellingPrice' | 'stockQty',
+    value: number
+  ): void {
+    this.variationRows = this.variationRows.map(r => ({
+      ...r,
+      [field]: value
+    }));
+  }
   loadItem() {
     this.itemservice.getAllItems().subscribe({
       next: (res) => {
@@ -271,87 +259,84 @@ bulkUpdate(
   closeInvoice() {
     this.isInvoiceOpen = false;
   }
-
   openReportPage() {
     this.isReportOpen = true;
   }
-
   closeReportPage() {
     this.isReportOpen = false;
   }
-
   openInvoicePage1() {
     this.routerObj.navigate(['sales/invoice']);
   }
-
   viewPrintReports() {
     this.openReportPage();
   }
-
   viewInventoryReports() {
     this.isInventoryReportOpen = true;
   }
-
   closeInventoryReportPage() {
     this.isInventoryReportOpen = false;
   }
-  
-  ngOnInit(): void {
-  // 1. Load initial data
-  this.loadItem();
-  this.initForms(); // Moved form logic to a helper for readability
-
-  // 2. Load Dashboard Statistics
-  this.dashboardService.getTopCardData().subscribe({
-    next: data => {
-      if (!data) this.dashboardData = null;
-      else if ((data as any).Data) this.dashboardData = (data as any).Data;
-      else if ((data as any).data) this.dashboardData = (data as any).data;
-      else this.dashboardData = data;
-    },
-    error: (err) => {
-      console.error(err);
-      this.errorMessage = 'Error loading dashboard data';
-      setTimeout(() => this.errorMessage = '', 3000);
-    }
-  });
-
-  // 3. Load Recent Orders
-  this.recentOrderService.getRecentOrders(10).subscribe({
-    next: (data) => {
-      if (Array.isArray(data)) this.recentOrders = data;
-      else if (Array.isArray((data as any).Data)) this.recentOrders = (data as any).Data;
-      else if (Array.isArray((data as any).data)) this.recentOrders = (data as any).data;
-      else this.recentOrders = [];
-    },
-    error: (err) => console.error('Order load error:', err)
-  });
-
-  // 4. Handle Invoice Loading (Conditional)
-  const idParam = this.route.snapshot.paramMap.get('id');
-  if (idParam) {
-    const id = Number(idParam);
-    this.getInvoiceService.getInvoiceById(id).subscribe({
-      next: (res) => {
-        // service returns normalized data (or wrapper.Data)
-        this.invoiceResponseData = (res as any)?.Data ? (res as any).Data : res;
-      },
-      error: (err) => console.error('Invoice load error:', err)
-    });
+  hasAnyMissingOptions(): boolean {
+    return this.variationTypes.some(t => !t.options.length);
   }
-}
+  hasAllOptionsValues(): boolean {
+    return this.variationTypes.length > 0 && !this.variationTypes.some(t => !t.options.length);
+  }
+  ngOnInit(): void {
+    // 1. Load initial data
+    this.loadItem();
+    this.initForms(); // Moved form logic to a helper for readability
 
-// Helper to keep ngOnInit clean
-private initForms(): void {
-  const formConfig = {
-    Name: ['', Validators.required],
-    Price: [null, [Validators.required, Validators.min(0)]],
-    Stock: [null, [Validators.required, Validators.min(0)]]
-  };
+    // 2. Load Dashboard Statistics
+    this.dashboardService.getTopCardData().subscribe({
+      next: data => {
+        if (!data) this.dashboardData = null;
+        else if ((data as any).Data) this.dashboardData = (data as any).Data;
+        else if ((data as any).data) this.dashboardData = (data as any).data;
+        else this.dashboardData = data;
+      },
+      error: (err) => {
+        console.error(err);
+        this.errorMessage = 'Error loading dashboard data';
+        setTimeout(() => this.errorMessage = '', 3000);
+      }
+    });
 
-  this.editForm = this.fb.group(formConfig);
-  this.createItemForm = this.fb.group(formConfig);
-}
+    // 3. Load Recent Orders
+    this.recentOrderService.getRecentOrders(10).subscribe({
+      next: (data) => {
+        if (Array.isArray(data)) this.recentOrders = data;
+        else if (Array.isArray((data as any).Data)) this.recentOrders = (data as any).Data;
+        else if (Array.isArray((data as any).data)) this.recentOrders = (data as any).data;
+        else this.recentOrders = [];
+      },
+      error: (err) => console.error('Order load error:', err)
+    });
+
+    // 4. Handle Invoice Loading (Conditional)
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (idParam) {
+      const id = Number(idParam);
+      this.getInvoiceService.getInvoiceById(id).subscribe({
+        next: (res) => {
+          // service returns normalized data (or wrapper.Data)
+          this.invoiceResponseData = (res as any)?.Data ? (res as any).Data : res;
+        },
+        error: (err) => console.error('Invoice load error:', err)
+      });
+    }
+  }
+  private initForms(): void {
+    const formConfig = {
+      Name: ['', Validators.required],
+      Price: [null, [Validators.required, Validators.min(0)]],
+      Stock: [null, [Validators.required, Validators.min(0)]]
+    };
+
+    this.editForm = this.fb.group(formConfig);
+    this.createItemForm = this.fb.group(formConfig);
+  }
   get f() {
     /*This is just getter function..It must return values so*/
     /*whatever controls you have created in UI all controls will return this getter function*/
@@ -366,15 +351,22 @@ private initForms(): void {
     const payload: Product = {
       name: this.Add['Name'].value.trim(),
       price: this.Add['Price'].value,
-      stock: this.Add['Stock'].value
+      stock: this.Add['Stock'].value,
+      variants: this.variationRows.length ? this.variationRows.map(row => ({
+        values: row.values,
+        sku: row.sku,
+        purchasePrice: row.purchasePrice ?? this.Add['Price'].value,
+        stockQty: row.stockQty ?? this.Add['Stock'].value,
+        status: row.status
+      })) : undefined
     };
 
     this.itemservice.addItem(payload).subscribe({
       next: (createdProduct) => {
-        this.productList.push(createdProduct);
-        console.log("this is the end", this.productList)
+        this.loadItem(); // Refresh product list immediately
         this.createItemForm.reset();
-        this.closeModal();
+        this.variationRows = []; // Clear variations
+        this.variationTypes = []; // Clear variation types
         this.successMessage = 'Product Added Successfully';
         setTimeout(() => this.successMessage = '', 3000);
       },
@@ -396,16 +388,13 @@ private initForms(): void {
       qty: [1, [Validators.required, Validators.min(1)]]
     });
   }
-
   get items(): FormArray {
     return this.form.get('invoice.items') as FormArray;
   }
-
   deleteProduct(id: number) {
     this.productToDelete = id;
     this.showDeleteConfirm = true;
   }
-
   confirmDelete() {
     if (this.productToDelete !== null) {
       this.itemservice.deleteRecord(this.productToDelete).subscribe({
@@ -424,7 +413,6 @@ private initForms(): void {
       });
     }
   }
-
   cancelDelete() {
     this.showDeleteConfirm = false;
     this.productToDelete = null;
@@ -508,9 +496,9 @@ private initForms(): void {
 
     const customerPayload = isNewCustomer
       ? {
-          Name: formValue.customer.Name.trim(),
-          Email: formValue.customer.Email?.trim() || null
-        }
+        Name: formValue.customer.Name.trim(),
+        Email: formValue.customer.Email?.trim() || null
+      }
       : null;
 
     const payload: CreateInvoiceRequest = {
@@ -525,12 +513,12 @@ private initForms(): void {
     this.SaveService.saveInvoice(payload).subscribe({
       next: (res) => {
         console.log('Invoice Created Successfully', res);
-        
+
         // Handle both new and updated response format
         if (res.Success && res.Data) {
           this.invoiceResponseData = res.Data;
           this.successMessage = 'Invoice saved successfully!';
-          
+
           // Reset form after successful save
           this.form.reset({
             isNewCustomer: true,
@@ -544,7 +532,7 @@ private initForms(): void {
               items: [this.createItem()]
             }
           });
-          
+
           setTimeout(() => {
             this.successMessage = '';
             this.closeInvoice();
@@ -564,10 +552,10 @@ private initForms(): void {
       error: (err) => {
         console.error('Backend Error Details:', err);
         console.error('Error response:', err.error);
-        
+
         // Extract error message from backend response
         let errorMsg = 'Unable to save invoice. Please try again.';
-        
+
         // Check for consistent error response format
         if (err.error?.Message) {
           errorMsg = err.error.Message;
@@ -578,15 +566,15 @@ private initForms(): void {
         } else if (err.message) {
           errorMsg = err.message;
         }
-        
+
         this.errorMessage = errorMsg;
         setTimeout(() => (this.errorMessage = ''), 5000);
       }
     });
   }
-   private getProductName(productId: number): string {
-  const product = this.productList.find(p => p.id === productId);
-  return product ? product.name : 'Unknown Product';
+  private getProductName(productId: number): string {
+    const product = this.productList.find(p => p.id === productId);
+    return product ? product.name : 'Unknown Product';
   }
   isProductAlreadySelected(productId: any, currentIndex: number): boolean {
     const targetId = Number(productId);
@@ -614,11 +602,9 @@ private initForms(): void {
     });
 
   }
-
   getInStockCount(): number {
     return this.productList.filter(product => Number(product.stock) > 0).length;
   }
-
   getLowStockProducts(): any[] {
     return this.productList.filter(product => Number(product.stock) < 10);
   }

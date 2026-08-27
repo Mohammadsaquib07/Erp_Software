@@ -70,19 +70,16 @@ export interface InvoiceItemResponse {
   price: number;
   total: number;
 }
-
 export interface CreateCustomerDto {
   Name: string;
   Email?: string | null;
   Phone?: string | null;
   BillingAddress?: string | null;
 }
-
 export interface InvoiceItemRequestDto {
   ProductId: number;
   Quantity: number;
 }
-
 export interface CreateInvoiceRequest {
   IsNewCustomer: boolean;
   CustomerId?: number | null;

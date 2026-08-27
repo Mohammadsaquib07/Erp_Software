@@ -6,6 +6,13 @@ export interface Product {
   name: string;
   price: number;
   stock: number;
+  variants?: Array<{
+    values: string[];
+    sku: string;
+    purchasePrice: number;
+    stockQty: number;
+    status: 'Active' | 'Inactive';
+  }>;
 }
 
 @Injectable({
@@ -29,6 +36,7 @@ deleteRecord(id:number):Observable<any>{
 return this.httpClient.delete<any>(`${this.apiUrl}/${id}`);
 }
 addItem(data:Product):Observable<Product>{
+  alert(JSON.stringify(data))
   return this.httpClient.post<any>(this.apiUrl,data);
 }
 }
