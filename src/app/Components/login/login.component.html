@@ -1,104 +1,117 @@
-<div class="login-wrapper d-flex align-items-center justify-content-center min-vh-100">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-12 col-sm-10 col-md-6 col-lg-4">
-        <div class="card login-card border-0 shadow-lg rounded-4">
-          <div class="card-body p-4 p-md-5">
-            <div class="text-center mb-4">
-              <div class="brand-icon mb-3">
-                <i class="pi pi-building" style="font-size: 3rem; color: #2563eb;"></i>
-              </div>
-              <h3 class="fw-bold mb-1">ERP Secure Portal</h3>
-              <p class="text-muted small mb-0">
-                Sign in to access your dashboard
-              </p>
-            </div>
-            <form [formGroup]="loginForm">
-              <div class="mb-3 position-relative">
-                <label class="form-label small fw-semibold text-muted">
-                  Username
-                </label>
-                <div class="input-group">
-                  <span class="input-group-text bg-transparent border-0">
-                    <i class="pi pi-user"
-                      [ngClass]="{'text-success': f['username'].valid && f['username'].touched, 'text-danger': f['username'].invalid && f['username'].touched, 'text-muted': !f['username'].touched}"></i>
-                  </span>
-                  <input type="text" formControlName="username"
-                    class="form-control form-control-lg border-0 border-bottom" placeholder="Enter your username"
-                    [ngClass]="{
-                      'is-valid': f['username'].valid && f['username'].touched,
-                      'is-invalid': f['username'].invalid && f['username'].touched
-                    }" />
-                  <span class="input-group-text bg-transparent border-0">
-                    <i class="pi pi-check"
-                      [ngClass]="{'text-success': f['username'].valid && f['username'].touched, 'text-danger': f['username'].invalid && f['username'].touched, 'text-muted': !f['username'].touched}"></i>
-                  </span>
-                </div>
-                <div class="invalid-feedback d-block" *ngIf="f['username'].invalid && f['username'].touched">
-                  <small *ngIf="f['username'].errors?.['required']">Username is required.</small>
-                  <small *ngIf="f['username'].errors?.['minlength']">Username must be at least 3 characters.</small>
-                  <small *ngIf="f['username'].errors?.['maxlength']">Username must not exceed 20 characters.</small>
-                </div>
-              </div>
-              <div class="mb-4 position-relative">
-                <label class="form-label small fw-semibold text-muted">
-                  Password
-                </label>
-                <div class="input-group">
-                  <span class="input-group-text bg-transparent border-0">
-                    <i class="pi pi-lock"
-                      [ngClass]="{'text-success': f['password'].valid && f['password'].touched, 'text-danger': f['password'].invalid && f['password'].touched, 'text-muted': !f['password'].touched}"></i>
-                  </span>
-                  <input [type]="showPassword ? 'text' : 'password'" formControlName="password"
-                    class="form-control form-control-lg border-0 border-bottom" placeholder="Enter your password"
-                    [ngClass]="{
-                      'is-valid': f['password'].valid && f['password'].touched,
-                      'is-invalid': f['password'].invalid && f['password'].touched
-                    }" />
-                  <span class="input-group-text bg-transparent border-0">
-                    <i class="pi" [ngClass]="showPassword ? 'pi-eye-slash' : 'pi-eye'"
-                      (click)="togglePasswordVisibility()" style="cursor: pointer;"></i>
-                  </span>
-                </div>
-                <div class="invalid-feedback d-block" *ngIf="f['password'].invalid && f['password'].touched">
-                  <small *ngIf="f['password'].errors?.['required']">Password is required.</small>
-                  <small *ngIf="f['password'].errors?.['minlength']">Password must be at least 6 characters.</small>
-                  <small *ngIf="f['password'].errors?.['pattern']">Password must include uppercase, lowercase, number,
-                    and special character.</small>
-                </div>
-              </div>
-              <div class="mb-3 form-check d-flex align-items-center gap-2">
-                <input type="checkbox" id="rememberMe" formControlName="rememberMe" class="form-check-input" />
-                <label for="rememberMe" class="form-check-label mb-0">Remember me</label>
-              </div>
-              <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold rounded-pill"
-                [disabled]="loginForm.invalid" (click)="onSubmit()">
-                <i class="pi pi-sign-in me-2"></i>Sign In
-              </button>
-            </form>
-            <!-- Bootstrap Toast -->
-            <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
-              <div class="toast" [ngClass]="{'show': errorMessage}" role="alert" aria-live="assertive"
-                aria-atomic="true">
-                <div class="toast-header bg-danger text-white">
-                  <i class="pi pi-exclamation-triangle me-2"></i>
-                  <strong class="me-auto">Login Failed</strong>
-                  <button type="button" class="btn-close btn-close-white" (click)="errorMessage = ''"></button>
-                </div>
-                <div class="toast-body">
-                  {{ errorMessage }}
-                </div>
-              </div>
-            </div>
-            <div class="text-center mt-4">
-              <a href="#" class="small text-decoration-none text-muted">
-                Forgot your password?
-              </a>
-              <p class="switch-auth">Don't have an account? <a routerLink="/signup">Sign up</a></p>
-            </div>
-          </div>
-        </div>
+<div class="auth-shell">
+  <!-- Brand panel (hidden on mobile) -->
+  <aside class="brand-panel">
+    <div class="brand-panel__top">
+      <div class="brand-mark"><span class="brand-mark__glyph">E</span></div>
+      <span class="brand-panel__name">ERP Secure Portal</span>
+    </div>
+
+    <div class="brand-panel__body">
+      <h1 class="brand-panel__headline">Run the whole business from one screen.</h1>
+      <p class="brand-panel__sub">Inventory, sales, purchase and finance — synced in real time, built for teams that
+        can't afford downtime.</p>
+
+      <ul class="brand-panel__points">
+        <li><i class="pi pi-check-circle"></i> Live stock across every branch</li>
+        <li><i class="pi pi-check-circle"></i> GST-ready invoicing</li>
+        <li><i class="pi pi-check-circle"></i> Role-based access control</li>
+      </ul>
+    </div>
+
+    <div class="ledger-tape" aria-hidden="true">
+      <div class="ledger-tape__track">
+        <span class="ledger-tape__item" *ngFor="let item of tickerItems">{{ item }}</span>
+        <span class="ledger-tape__item" *ngFor="let item of tickerItems">{{ item }}</span>
       </div>
     </div>
-  </div>
+  </aside>
+
+  <!-- Form panel -->
+  <main class="form-panel">
+    <div class="form-panel__inner">
+      <div class="mobile-brand">
+        <div class="brand-mark brand-mark--sm"><span class="brand-mark__glyph">E</span></div>
+        <span>ERP Secure Portal</span>
+      </div>
+
+      <div class="form-head">
+        <h2>Sign in</h2>
+        <p>Enter your credentials to access your dashboard.</p>
+      </div>
+
+      <form [formGroup]="loginForm" class="auth-form">
+        <div class="field">
+          <label class="field__label" for="username">Username</label>
+          <div class="field__control" [ngClass]="{
+              'field__control--valid': f['username'].valid && f['username'].touched,
+              'field__control--invalid': f['username'].invalid && f['username'].touched
+            }">
+            <i class="pi pi-user"></i>
+            <input type="text" id="username" formControlName="username" placeholder="yourname" />
+          </div>
+          <div class="field__error" *ngIf="f['username'].invalid && f['username'].touched">
+            <small *ngIf="f['username'].errors?.['required']">Username is required.</small>
+            <small *ngIf="f['username'].errors?.['minlength']">Username must be at least 3 characters.</small>
+            <small *ngIf="f['username'].errors?.['maxlength']">Username must not exceed 20 characters.</small>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="companyName">Company Name</label>
+          <div class="field__control" [ngClass]="{
+      'field__control--valid': f['companyName'].valid && f['companyName'].touched,
+      'field__control--invalid': f['companyName'].invalid && f['companyName'].touched
+    }">
+            <i class="pi pi-building"></i>
+            <input type="text" id="companyName" formControlName="companyName" placeholder="Enter your company name"
+              autocomplete="organization" />
+          </div>
+          <div class="field__error" *ngIf="f['companyName'].invalid && f['companyName'].touched">
+            <small *ngIf="f['companyName'].errors?.['required']">Company name is required.</small>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field__label" for="password">Password</label>
+          <div class="field__control" [ngClass]="{
+              'field__control--valid': f['password'].valid && f['password'].touched,
+              'field__control--invalid': f['password'].invalid && f['password'].touched
+            }">
+            <i class="pi pi-lock"></i>
+            <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
+              placeholder="••••••••" />
+            <i class="pi field__toggle" [ngClass]="showPassword ? 'pi-eye-slash' : 'pi-eye'"
+              (click)="togglePasswordVisibility()"></i>
+          </div>
+          <div class="field__error" *ngIf="f['password'].invalid && f['password'].touched">
+            <small *ngIf="f['password'].errors?.['required']">Password is required.</small>
+          </div>
+        </div>
+
+        <div class="field field--row">
+          <label class="checkbox">
+            <input type="checkbox" formControlName="rememberMe" />
+            <span>Remember me</span>
+          </label>
+          <a href="#" class="link-muted">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-submit" [disabled]="loginForm.invalid" (click)="onSubmit()">
+          Sign in <i class="pi pi-arrow-right"></i>
+        </button>
+      </form>
+
+      <p class="switch-auth">Don't have an account? <a routerLink="/signup">Create one</a></p>
+    </div>
+
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+      <div class="toast" [ngClass]="{'show': errorMessage}" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-danger text-white">
+          <i class="pi pi-exclamation-triangle me-2"></i>
+          <strong class="me-auto">Sign-in failed</strong>
+          <button type="button" class="btn-close btn-close-white" (click)="errorMessage = ''"></button>
+        </div>
+        <div class="toast-body">{{ errorMessage }}</div>
+      </div>
+    </div>
+  </main>
 </div>

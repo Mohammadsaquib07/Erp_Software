@@ -10,17 +10,25 @@ import { LoadingServiceService } from '../../Services/loading-service.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   loginForm: FormGroup;
   private loading = inject(LoadingServiceService);
   showPassword: boolean = false;
   errorMessage: string = '';
+  // items shown in the brand panel ticker
+  tickerItems: string[] = [
+    'Live stock across every branch',
+    'GST-ready invoicing',
+    'Role-based access control',
+    'Real-time sync across locations'
+  ];
 
   constructor(private fb: FormBuilder, private authServiceObj: AuthService, private router: Router) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
+       companyName: ['', Validators.required],
       password: ['', [Validators.required]],   // no complexity pattern on login — that's a signup-only rule
       rememberMe: [false]
     });
@@ -33,7 +41,7 @@ export class LoginComponent {
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
-
+get companyName() { return this.loginForm.get('companyName'); }
   onSubmit() {
     if (this.loginForm.valid) {
       this.loading.show();

@@ -5,7 +5,7 @@ import { Component, Input } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './child.component.html',
-  styleUrl: './child.component.css'
+  styleUrls: ['./child.component.css']
 })
 export class ChildComponent {
 @Input() name:string = ""

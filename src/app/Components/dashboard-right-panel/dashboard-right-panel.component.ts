@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './dashboard-right-panel.component.html',
-  styleUrl: './dashboard-right-panel.component.css'
+  styleUrls: ['./dashboard-right-panel.component.css']
 })
 export class DashboardRightPanelComponent {
 

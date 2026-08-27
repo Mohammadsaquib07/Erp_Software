@@ -7,7 +7,7 @@ import { LoadingServiceService } from '../../Services/loading-service.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './spinner.component.html',
-  styleUrl: './spinner.component.css'
+  styleUrls: ['./spinner.component.css']
 })
 export class SpinnerComponent {
 

@@ -12,7 +12,7 @@ import { LoadingServiceService } from '../../Services/loading-service.service';
   standalone: true,
   imports: [CommonModule, ProductComponent, PurchaseScreenComponent, SpinnerComponent],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css'
+  styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements AfterViewInit, OnInit, OnDestroy {
   constructor(private authService:AuthService){}

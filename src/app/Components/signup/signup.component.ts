@@ -29,10 +29,19 @@ export class SignupComponent {
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);
 
+  // ticker items for brand panel
+  tickerItems: string[] = [
+    'Live stock across every branch',
+    'GST-ready invoicing',
+    'Role-based access control',
+    'Real-time sync across locations'
+  ];
+
   signupForm = this.fb.group(
     {
       username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       email: ['', [Validators.required, Validators.email]],
+       companyName: ['', Validators.required], // add this
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', Validators.required]
     },
@@ -43,6 +52,7 @@ export class SignupComponent {
     this.showPassword.update(v => !v);
   }
 
+  get companyName() { return this.signupForm.get('companyName'); }
   get username() { return this.signupForm.get('username'); }
   get email() { return this.signupForm.get('email'); }
   get password() { return this.signupForm.get('password'); }
